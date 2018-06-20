@@ -21,8 +21,7 @@ class TestDatabase(unittest.TestCase):
         self.database.folder = "tests/database"
         self.fields = ["SubjectId", "Age"]
         self.entry = {self.fields[0]: 's01', self.fields[1]: '56'}
-        
-        
+
     def testCreateDatabase(self):
         self.database.create()
         self.assertTrue(os.path.isfile(self.database.folder + "/" + self.database.fileName))
@@ -81,7 +80,7 @@ class TestDatabase(unittest.TestCase):
         self.database.load()
         self.assertEqual(self.database.fields, self.fields)
         self.database.destroy()
-        
+
     def testAddEntry(self):
         self.database.addFields(self.fields)
         self.database.addEntry(self.entry)
