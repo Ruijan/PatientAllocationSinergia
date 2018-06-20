@@ -15,3 +15,7 @@ class FileNotExistError(Exception):
 class EmptyFileNameError(Exception):
     def __init__(self):
         self.message = "Empty file name. Please set it before create the database"
+        
+class EmptyFieldError(Exception):
+    def __init__(self):
+        self.message = "Empty field. Please give it a proper name before create the database"
