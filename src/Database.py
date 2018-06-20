@@ -8,6 +8,7 @@ class Database:
         self.fileName = ""
         self.folder = ""
         self.fields = []
+        self.entries = []
         
     def create(self):
         if(not os.path.isdir(self.folder)):
@@ -30,6 +31,8 @@ class Database:
         with open(fullpath, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             self.fields = reader.fieldnames
+            for row in reader:
+                self.addEntry(row)
                 
     def __checkReadingPath(self, fullpath):
         if(self.fileName == ""):
@@ -52,3 +55,9 @@ class Database:
     def addFields(self, fields):
         for field in fields:
             self.addField(field)
+            
+    def addEntry(self, entry):
+        for field in entry.keys():
+            if(field not in self.fields):
+                raise DatabaseError.EntryWithUnknownFields
+        self.entries.append(entry)

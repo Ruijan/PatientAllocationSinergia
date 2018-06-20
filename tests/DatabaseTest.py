@@ -20,7 +20,7 @@ class TestDatabase(unittest.TestCase):
         self.database.fileName = "database.csv"
         self.database.folder = "tests/database"
         self.fields = ["SubjectId", "Age"]
-        self.entry = {self.fields[0]: 's01', self.fields[1]: 56}
+        self.entry = {self.fields[0]: 's01', self.fields[1]: '56'}
         
         
     def testCreateDatabase(self):
@@ -60,7 +60,7 @@ class TestDatabase(unittest.TestCase):
         self.database.addFields(self.fields)
         self.assertEqual(self.database.fields, self.fields)
         
-    def testLoadDatabase(self):
+    def testLoadFieldsDatabase(self):
         self.database.fileName = "filledDatabase.csv"
         self.database.load()
         self.assertEqual(self.database.fields, self.fields)
@@ -75,6 +75,20 @@ class TestDatabase(unittest.TestCase):
         
     def testAddEntry(self):
         self.database.addFields(self.fields)
+        self.database.addEntry(self.entry)
+        self.assertEqual(self.database.entries[0], self.entry)
+        
+    def testAddEntryWithWrongFieldNames(self):
+        self.database.addFields(self.fields)
+        wrongFieldsEntry = {self.fields[0]: 's01', 'FMA': 56}
+        with self.assertRaises(DatabaseError.EntryWithUnknownFields):
+            self.database.addEntry(wrongFieldsEntry)
+            
+    def testLoadingEntryFromDatabase(self):
+        self.database.fileName = "filledDatabase.csv"
+        self.database.load()
+        self.assertEqual(self.database.entries[0], self.entry)
+        self.assertEqual(len(self.database.entries), 2)
     
     def tearDown(self):
         pass        

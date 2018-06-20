@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/Ruijan/PatientAllocationSinergia.svg?branch=master)](https://travis-ci.org/Ruijan/PatientAllocationSinergia)
+[![codecov](https://codecov.io/gh/Ruijan/PatientAllocationSinergia/branch/master/graph/badge.svg)](https://codecov.io/gh/Ruijan/PatientAllocationSinergia)
+
+
 **Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
 
 When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.

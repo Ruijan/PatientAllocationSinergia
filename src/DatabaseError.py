@@ -19,3 +19,7 @@ class EmptyFileNameError(Exception):
 class EmptyFieldError(Exception):
     def __init__(self):
         self.message = "Empty field. Please give it a proper name before create the database"
+        
+class EntryWithUnknownFields(Exception):
+    def __init__(self):
+        self.message = "Entry has unknown fields. Please check that all fields are filled before adding it to the database"
