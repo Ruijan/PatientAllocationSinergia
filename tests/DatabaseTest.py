@@ -65,6 +65,15 @@ class TestDatabase(unittest.TestCase):
         self.database.load()
         self.assertEqual(self.database.fields, self.fields)
         
+    def testLoadDatabaseWithEmptyFileNameShouldTrow(self):
+        self.database.fileName = ""
+        with self.assertRaises(DatabaseError.EmptyFileNameError):
+            self.database.load()
+    
+    def testLoadDatabaseWithWrongFileName(self):
+        with self.assertRaises(DatabaseError.FileNotExistError):
+            self.database.load()
+        
     def testFieldsAddedToCSV(self):
         self.database.addFields(self.fields)
         self.database.create()
