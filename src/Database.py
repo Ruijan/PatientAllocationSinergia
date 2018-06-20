@@ -18,7 +18,7 @@ class Database:
         with open(fullpath, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fields)
             writer.writeheader()
-                            
+
     def __checkWritingPath(self, fullpath):
         if(self.fileName == ""):
             raise DatabaseError.EmptyFileNameError()
