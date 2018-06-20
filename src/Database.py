@@ -61,3 +61,4 @@ class Database:
             if(field not in self.fields):
                 raise DatabaseError.EntryWithUnknownFields
         self.entries.append(entry)
+        
