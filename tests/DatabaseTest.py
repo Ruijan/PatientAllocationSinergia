@@ -91,7 +91,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(self.database.entries), 2)
     
     def tearDown(self):
-        pass        
+        pass
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,7 +9,7 @@ class Database:
         self.folder = ""
         self.fields = []
         self.entries = []
-        
+
     def create(self):
         if(not os.path.isdir(self.folder)):
             os.mkdir(self.folder)
@@ -24,7 +24,7 @@ class Database:
             raise DatabaseError.EmptyFileNameError()
         if(os.path.exists(fullpath)):
             raise DatabaseError.FileExistError(fullpath)
-            
+
     def load(self):
         fullpath = self.folder + "/" + self.fileName
         self.__checkReadingPath(fullpath)
@@ -33,29 +33,29 @@ class Database:
             self.fields = reader.fieldnames
             for row in reader:
                 self.addEntry(row)
-                
+
     def __checkReadingPath(self, fullpath):
         if(self.fileName == ""):
             raise DatabaseError.EmptyFileNameError()
         if(not os.path.exists(fullpath)):
             raise DatabaseError.FileNotExistError(fullpath)
-        
+
     def destroy(self):
         fullpath = self.folder + "/" + self.fileName
         if(not os.path.exists(fullpath)):
             raise DatabaseError.FileNotExistError(fullpath)
         fullpath = self.folder + "/" + self.fileName
         os.remove(fullpath)
-        
+
     def addField(self, field):
         if(field == ""):
             raise DatabaseError.EmptyFieldError()
         self.fields.append(field)
-        
+
     def addFields(self, fields):
         for field in fields:
             self.addField(field)
-            
+
     def addEntry(self, entry):
         for field in entry.keys():
             if(field not in self.fields):
