@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/Ruijan/PatientAllocationSinergia.svg?branch=master)](https://travis-ci.org/Ruijan/PatientAllocationSinergia)
 [![codecov](https://codecov.io/gh/Ruijan/PatientAllocationSinergia/branch/master/graph/badge.svg)](https://codecov.io/gh/Ruijan/PatientAllocationSinergia)
+[![CodeFactor](https://www.codefactor.io/repository/github/ruijan/patientallocationsinergia/badge)](https://www.codefactor.io/repository/github/ruijan/patientallocationsinergia)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5839e54e7307428a8291808e2539c4da)](https://www.codacy.com/app/rechenmann/PatientAllocationSinergia?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ruijan/PatientAllocationSinergia&amp;utm_campaign=Badge_Grade)
 
 
 **Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
