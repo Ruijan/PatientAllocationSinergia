@@ -18,7 +18,7 @@ class TestDatabase(unittest.TestCase):
     def setUp(self):
         self.database = Database()
         self.database.fileName = "database.csv"
-        self.database.folder = "database"
+        self.database.folder = "tests/database"
         self.fields = ["SubjectId", "Age"]
         self.entry = {self.fields[0]: 's01', self.fields[1]: 56}
         
