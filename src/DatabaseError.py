@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
+class DatabaseError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self)
+        self.message = message
 
-class FileExistError(Exception):
+class FileExistError(DatabaseError):
     def __init__(self, fullpath):
-        Exception.__init__(self)
-        self.message = "File already exists at: " + fullpath
+        DatabaseError.__init__(self, "File already exists at: " + fullpath)
 
-class FileNotExistError(Exception):
+class FileNotExistError(DatabaseError):
     def __init__(self, fullpath):
-        Exception.__init__(self)
-        self.message = "File does not exist at: " + fullpath
+        DatabaseError.__init__(self, "File does not exist at: " + fullpath)
 
-class EmptyFileNameError(Exception):
+class EmptyFileNameError(DatabaseError):
     def __init__(self):
-        Exception.__init__(self)
-        self.message = "Empty file name. Please set it before create the database"
+        DatabaseError.__init__(self, "Empty file name. Please set it before create the database")
 
-class EmptyFieldError(Exception):
+class EmptyFieldError(DatabaseError):
     def __init__(self):
-        Exception.__init__(self)
-        self.message = "Empty field. Please give it a proper name before create the database"
+        DatabaseError.__init__(self, "Empty field. Please give it a proper name before create the database")
 
-class EntryWithUnknownFields(Exception):
+class EntryWithUnknownFields(DatabaseError):
     def __init__(self):
-        Exception.__init__(self)
-        self.message = "Entry has unknown fields. Please check that all fields are filled before adding it to the database"
+        DatabaseError.__init__(self, "Entry has unknown fields. Please check that all fields are filled before adding it to the database")

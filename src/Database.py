@@ -25,14 +25,22 @@ class Database:
         if(os.path.exists(fullpath)):
             raise DatabaseError.FileExistError(fullpath)
 
-    def load(self):
-        fullpath = self.folder + "/" + self.fileName
+    def loadWithFullPath(self, fullpath):
+        explodedPath = fullpath.split("/")
+        self.fileName = explodedPath[len(explodedPath)-1]
+        explodedPath[len(explodedPath)-1] = ""
+        self.folder = "/".join(explodedPath)
         self.__checkReadingPath(fullpath)
         with open(fullpath, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             self.fields = reader.fieldnames
             for row in reader:
                 self.addEntry(row)
+                
+    def load(self):
+        fullpath = self.folder + "/" + self.fileName
+        self.loadWithFullPath(fullpath)
+        
 
     def __checkReadingPath(self, fullpath):
         if(self.fileName == ""):

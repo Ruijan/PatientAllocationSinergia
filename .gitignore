@@ -1,3 +1,4 @@
 *.csv
 *.pyc
 !tests/database/filledDatabase.csv
+.idea
