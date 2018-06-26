@@ -110,7 +110,7 @@ class Database:
             raise DatabaseError.EntryWithUnknownFields
         indexField = self.fields.index(field)
         if self.ttest[indexField] is 0:
-            raise Database.CannotComputeTTestOnField(field)
+            raise DatabaseError.CannotComputeTTestOnField(field)
         groups = ({self.groups[0] : [], self.groups[1] : []})
         for entry in self.entries:
             groups[entry["Group"]].append(int(entry[field]))
@@ -130,13 +130,12 @@ class Database:
                     pvalue = database.getPValue(field)
                     if pvalue < minPvalue:
                         minPvalue = pvalue
-                except:
+                except DatabaseError.CannotComputeTTestOnField:
                     pass
             pvalues[group] = minPvalue
         thresholdProbability = pvalues[self.groups[0]] / (pvalues[self.groups[0]] + pvalues[self.groups[1]])
         proba = random.random()
         if proba < thresholdProbability:
             return self.groups[0]
-        else:
-            return self.groups[1]
+        return self.groups[1]
         

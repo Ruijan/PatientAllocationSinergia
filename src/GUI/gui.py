@@ -159,7 +159,7 @@ class GUI():
                 entryIndex += 1
             try:
                 self.app.addLabel("PValue_" + field, str(round(self.database.getPValue(field),2)))
-            except:
+            except Database.CannotComputeTTestOnField as error:
                 self.app.addLabel("PValue_" + field, "")
                 pass
             if field != "Group":
