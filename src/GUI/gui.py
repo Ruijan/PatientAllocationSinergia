@@ -159,9 +159,8 @@ class GUI():
                 entryIndex += 1
             try:
                 self.app.addLabel("PValue_" + field, str(round(self.database.getPValue(field),2)))
-            except Database.CannotComputeTTestOnField as error:
+            except Database.CannotComputeTTestOnField:
                 self.app.addLabel("PValue_" + field, "")
-                pass
             if field != "Group":
                 self.app.addEntry("New " + field)
             self.app.stopFrame()
@@ -180,3 +179,4 @@ class GUI():
 if __name__ == '__main__':
     app = GUI()
     app.start()
+    
