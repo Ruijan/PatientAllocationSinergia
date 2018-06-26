@@ -9,9 +9,12 @@ install:
   - pip install codecov
   - pip install appjar
   - pip install scipy
+  - pip install codacy-coverage
 
 script:
   - coverage run tests/DatabaseTest.py
 
 after_success:
   - codecov
+  - export CODACY_PROJECT_TOKEN=7a37dbd5db9e4dfc86b46f6f3e2594bd
+  - python-codacy-coverage -r coverage.xml
