@@ -16,7 +16,6 @@ class Database:
         self.groups = []
         random.seed(datetime.now())
 
-        
     def createCopy(self):
         database = Database()
         database.fileName = self.fileName
@@ -30,8 +29,8 @@ class Database:
     def create(self):
         fullpath = self.folder + "/" + self.fileName
         self.createWithFullPath(fullpath)
-        
-            
+
+
     def createWithFullPath(self, fullpath):
         self.__setFileAndPathFromFullpath__(fullpath)
         if(not os.path.isdir(self.folder)):
@@ -43,7 +42,7 @@ class Database:
             writer.writeheader()
             for entry in self.entries:
                 writer.writerow(entry)
-            
+
     def __setFileAndPathFromFullpath__(self, fullpath):
         explodedPath = fullpath.split("/")
         self.fileName = explodedPath[len(explodedPath)-1]
@@ -68,11 +67,11 @@ class Database:
             for row in reader:
                 del row[None]
                 self.addEntryWithGroup(row)
-                
+
     def load(self):
         fullpath = self.folder + "/" + self.fileName
         self.loadWithFullPath(fullpath)
-        
+
 
     def __checkReadingPath__(self, fullpath):
         if(self.fileName == ""):
@@ -104,7 +103,7 @@ class Database:
             if(field not in self.fields):
                 raise DatabaseError.EntryWithUnknownFields
         self.entries.append(entry)
-        
+
     def getPValue(self, field):
         if(field not in self.fields):
             raise DatabaseError.EntryWithUnknownFields
@@ -114,9 +113,9 @@ class Database:
         groups = ({self.groups[0] : [], self.groups[1] : []})
         for entry in self.entries:
             groups[entry["Group"]].append(int(entry[field]))
-        tvalue, pvalue = stats.ttest_ind(groups[self.groups[0]],groups[self.groups[1]], equal_var = False)
+        _, pvalue = stats.ttest_ind(groups[self.groups[0]],groups[self.groups[1]], equal_var = False)
         return pvalue
-         
+
     def getGroupFromNewEntry(self, newEntry):
         pvalues = dict()
         for group in self.groups:
@@ -138,4 +137,3 @@ class Database:
         if proba < thresholdProbability:
             return self.groups[0]
         return self.groups[1]
-        

@@ -19,7 +19,7 @@ class GUI():
         self.databaseDisplayed = False
         self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
         self.__initGUI__()
-        
+
     def __initGUI__(self):
         self.app.addMenuList("File", self.fileMenus, self.menuPress)
         self.app.addLabel("Welcome Title","Welcome to Patient Allocation")
@@ -29,7 +29,7 @@ class GUI():
         self.app.addStatusbar(fields=1, side="LEFT")
         self.app.setStatusbarWidth(120, 0)
         self.app.setStretch("COLUMN")
-        
+
     def start(self):
         self.app.go()
 
@@ -39,9 +39,9 @@ class GUI():
             self.app.stop()
         elif menu == "Load":
             path = str(Path.home()) + "/dev/PatientAllocationSinergia/tests/database"
-            self.file = self.app.openBox(title="Load database file", 
-                                             dirName=path, 
-                                             fileTypes=[('Spreadsheet', '*.csv')], 
+            self.file = self.app.openBox(title="Load database file",
+                                             dirName=path,
+                                             fileTypes=[('Spreadsheet', '*.csv')],
                                              asFile=True,
                                              parent=None)
             self.file = self.file.name
@@ -54,22 +54,22 @@ class GUI():
             self.__displayCreateDatabasePanel__()
         elif menu == "Save":
             if self.database.fileName == "":
-                self.file = self.app.saveBox(title="Save database", fileName=None, 
-                                  dirName=None, fileExt=".csv", 
-                                  fileTypes=[('Spreadsheet', '*.csv')], 
-                                  asFile=None, parent=None)
+                self.file = self.__getFullpathToSaveFromUser__()
                 self.database.createWithFullPath(self.file)
             else:
                 self.database.create()
         elif menu == "Save as":
-            self.file = self.app.saveBox(title="Save database", fileName=None, 
-                              dirName=None, fileExt=".csv", 
-                              fileTypes=[('Spreadsheet', '*.csv')], 
-                              asFile=None, parent=None)
+            self.file = self.__getFullpathToSaveFromUser__()
             self.database.createWithFullPath(self.file)
         else:
             pass
-        
+
+    def __getFullpathToSaveFromUser__(self):
+        return self.app.saveBox(title="Save database", fileName=None,
+                                  dirName=None, fileExt=".csv",
+                                  fileTypes=[('Spreadsheet', '*.csv')],
+                                  asFile=None, parent=None)
+
     def __displayCreateDatabasePanel__(self):
         self.app.startFrame("Information", row=0, colspan=5)
         self.app.addLabel("Title", "Database Creation",0,0,colspan=4)
@@ -100,14 +100,11 @@ class GUI():
             self.app.clearEntry("Add new field", callFunction=False)
         else:
             self.app.setStatusbar("Operation Canceled: Field already exists", field=0)
-        
+
     def __createDatabase__(self):
         self.database.groups.append(self.app.getEntry("Group 1"))
         self.database.groups.append(self.app.getEntry("Group 2"))
-        self.file = self.app.saveBox(title="Save database", fileName=None, 
-                                  dirName=None, fileExt=".csv", 
-                                  fileTypes=[('Spreadsheet', '*.csv')], 
-                                  asFile=None, parent=None)
+        self.file = self.__getFullpathToSaveFromUser__()
         self.database.createWithFullPath(self.file)
         self.app.removeAllWidgets()
         self.__initGUI__()
@@ -138,7 +135,7 @@ class GUI():
         fieldIndex = 0
         self.app.startFrame("DatabaseDisplay")
         self.app.startFrame("IndicesFrame", row=0, column=fieldIndex)
-        self.app.addLabel("Indices", "Indices") 
+        self.app.addLabel("Indices", "Indices")
         entryIndex = 1
         for entry in self.database.entries:
             self.app.addLabel("Indices_" + str(entryIndex), str(entryIndex))
@@ -169,7 +166,7 @@ class GUI():
         self.app.stopFrame()
         self.app.stopFrame()
         self.databaseDisplayed = True
-        
+
     def __addSubject__(self):
         subject = dict()
         for field in self.database.fields:
@@ -179,4 +176,3 @@ class GUI():
 if __name__ == '__main__':
     app = GUI()
     app.start()
-    
