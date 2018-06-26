@@ -128,7 +128,7 @@ class TestDatabase(unittest.TestCase):
         self.database.fileName = "filledDatabase.csv"
         self.database.load()
         newEntry = {self.fields[0]: 's07', self.fields[1]: '65'}
-        self.__checkGroupDistribution__(newEntry, 0.4)
+        self.__checkGroupDistribution__(newEntry, 0.3)
 
     def testAddEntryToBiasedDatabase(self):
         self.database.fileName = "biasedFilledDatabase.csv"
@@ -139,7 +139,7 @@ class TestDatabase(unittest.TestCase):
     def __checkGroupDistribution__(self, newEntry, expectedFirstGroupProbability):
         groups = []
         countGroup = dict()
-        for index in range(1,200):
+        for index in range(1,1000):
             groups.append(self.database.getGroupFromNewEntry(newEntry))
         countGroup[self.groups[0]] = groups.count(self.groups[0])
         countGroup[self.groups[1]] = groups.count(self.groups[1])
