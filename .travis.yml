@@ -7,6 +7,8 @@ python:
 
 install:
   - pip install codecov
+  - pip install appjar
+  - pip install scipy
 
 script:
   - coverage run tests/DatabaseTest.py
