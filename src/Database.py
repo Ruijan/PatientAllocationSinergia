@@ -3,6 +3,8 @@ import os
 import DatabaseError
 import csv
 from scipy import stats
+import random
+from datetime import datetime
 
 class Database:
     def __init__(self):
@@ -12,6 +14,18 @@ class Database:
         self.entries = []
         self.ttest = []
         self.groups = []
+        random.seed(datetime.now())
+
+        
+    def createCopy(self):
+        database = Database()
+        database.fileName = self.fileName
+        database.folder = self.folder
+        database.fields = self.fields.copy()
+        database.ttest = self.ttest.copy()
+        database.groups = self.groups.copy()
+        database.entries = self.entries.copy()
+        return database
 
     def create(self):
         fullpath = self.folder + "/" + self.fileName
@@ -19,9 +33,9 @@ class Database:
         
             
     def createWithFullPath(self, fullpath):
+        self.__setFileAndPathFromFullpath__(fullpath)
         if(not os.path.isdir(self.folder)):
             os.mkdir(self.folder)
-        self.__setFileAndPathFromFullpath__(fullpath)
         self.__checkWritingPath__(fullpath)
         with open(fullpath, 'w') as csvfile:
             header = self.fields + ["ttest"] + self.ttest + ["Groups"] + self.groups
@@ -53,7 +67,7 @@ class Database:
             self.addFields(reader.fieldnames, ttestValues)
             for row in reader:
                 del row[None]
-                self.addEntry(row)
+                self.addEntryWithGroup(row)
                 
     def load(self):
         fullpath = self.folder + "/" + self.fileName
@@ -85,7 +99,7 @@ class Database:
             self.addField(field, ttests[fieldIndex])
             fieldIndex += 1
 
-    def addEntry(self, entry):
+    def addEntryWithGroup(self, entry):
         for field in entry.keys():
             if(field not in self.fields):
                 raise DatabaseError.EntryWithUnknownFields
@@ -103,3 +117,26 @@ class Database:
         tvalue, pvalue = stats.ttest_ind(groups[self.groups[0]],groups[self.groups[1]], equal_var = False)
         return pvalue
          
+    def getGroupFromNewEntry(self, newEntry):
+        pvalues = dict()
+        for group in self.groups:
+            database = self.createCopy()
+            newEntryGroup = dict(newEntry)
+            newEntryGroup["Group"] = group
+            database.addEntryWithGroup(newEntryGroup)
+            minPvalue = 1
+            for field in database.fields:
+                try:
+                    pvalue = database.getPValue(field)
+                    if pvalue < minPvalue:
+                        minPvalue = pvalue
+                except:
+                    pass
+            pvalues[group] = minPvalue
+        thresholdProbability = pvalues[self.groups[0]] / (pvalues[self.groups[0]] + pvalues[self.groups[1]])
+        proba = random.random()
+        if proba < thresholdProbability:
+            return self.groups[0]
+        else:
+            return self.groups[1]
+        

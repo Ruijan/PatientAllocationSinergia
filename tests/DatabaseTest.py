@@ -88,7 +88,7 @@ class TestDatabase(unittest.TestCase):
     def testEntriesAddedToCSV(self):
         self.database.addFields(self.fields, self.ttest)
         self.database.groups = self.groups
-        self.database.addEntry(self.entry)
+        self.database.addEntryWithGroup(self.entry)
         self.database.create()
         self.database.fields = []
         self.database.ttest = []
@@ -101,16 +101,16 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(self.database.entries[0], self.entry)
         
 
-    def testAddEntry(self):
+    def testAddEntryWithGroup(self):
         self.database.addFields(self.fields, self.ttest)
-        self.database.addEntry(self.entry)
+        self.database.addEntryWithGroup(self.entry)
         self.assertEqual(self.database.entries[0], self.entry)
         
     def testAddEntryWithWrongFieldNames(self):
         self.database.addFields(self.fields, self.ttest)
         wrongFieldsEntry = {self.fields[0]: 's01', 'FMA': 56}
         with self.assertRaises(DatabaseError.EntryWithUnknownFields):
-            self.database.addEntry(wrongFieldsEntry)
+            self.database.addEntryWithGroup(wrongFieldsEntry)
             
     def testLoadingEntryFromDatabase(self):
         self.database.fileName = "filledDatabase.csv"
@@ -122,11 +122,37 @@ class TestDatabase(unittest.TestCase):
         self.database.fileName = "filledDatabase.csv"
         self.database.load()
         self.assertTrue(self.database.getPValue("Age") < 1)
+        self.assertTrue(self.database.getPValue("Age") > 0)
+        
+    def testGetMostProbableGroupFromEntry(self):
+        self.database.fileName = "filledDatabase.csv"
+        self.database.load()
+        newEntry = {self.fields[0]: 's07', self.fields[1]: '65'}
+        groups = []
+        for index in range(1,200):
+            groups.append(self.database.getGroupFromNewEntry(newEntry))
+        countGroup1 = groups.count(self.groups[0])
+        countGroup2 = groups.count(self.groups[1])
+        self.assertEqual(round(countGroup1/(countGroup2 + countGroup1),1), 0.4)
+        
+    def testAddEntryToBiasedDatabase(self):
+        self.database.fileName = "biasedFilledDatabase.csv"
+        self.database.load()
+        newEntry = {self.database.fields[0]: 's07', self.database.fields[1]: '65', self.database.fields[2]: '2'}
+        groups = []
+        for index in range(1,200):
+            groups.append(self.database.getGroupFromNewEntry(newEntry))
+        countGroup1 = groups.count(self.groups[0])
+        countGroup2 = groups.count(self.groups[1])
+        print(self.groups[0] + str(countGroup1))
+        print(self.groups[1] + str(countGroup2))
+        self.assertEqual(round(countGroup1/(countGroup2 + countGroup1),1), 0.0)
     
     def tearDown(self):
         if self.created:
             self.database.destroy()
             pass
+            
 
 if __name__ == '__main__':
     unittest.main()
