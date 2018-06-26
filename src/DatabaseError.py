@@ -23,3 +23,7 @@ class EmptyFieldError(DatabaseError):
 class EntryWithUnknownFields(DatabaseError):
     def __init__(self):
         DatabaseError.__init__(self, "Entry has unknown fields. Please check that all fields are filled before adding it to the database")
+
+class CannotComputeTTestOnField(DatabaseError):
+    def __init__(self, field):
+        DatabaseError.__init__(self, "Field " + field + " is set to be not testable through ttest.")
