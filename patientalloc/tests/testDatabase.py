@@ -13,7 +13,7 @@ import os.path
 class TestDatabase(unittest.TestCase):
     def setUp(self):
         self.database = patientalloc.Database()
-        dirname, filename = os.path.split(os.path.abspath(__file__))
+        dirname, _ = os.path.split(os.path.abspath(__file__))
         self.database.fileName = "database.db"
         self.database.folder = dirname + "/database"
         self.fields = ["SubjectId", "Age", "Group"]
