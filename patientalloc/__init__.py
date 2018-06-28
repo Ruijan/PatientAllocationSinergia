@@ -14,5 +14,5 @@ def main():
     args = parser.parse_known_args()
     if args[0].mode is not None:
         del sys.argv[1:len(sys.argv)]
-    app = GUI()
+    app = GUI(args[0].mode)
     app.start()

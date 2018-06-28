@@ -13,8 +13,7 @@ class DatabaseCreatorDisplay():
 
     def display(self):
         self.__displayCreateDatabasePanel__()
-        self.app.disableMenuItem("File", "Save")
-        self.app.disableMenuItem("File", "Save as")
+        self.gui.disableMenuItem()
 
     def __displayCreateDatabasePanel__(self):
         self.app.setFont(size=14)
