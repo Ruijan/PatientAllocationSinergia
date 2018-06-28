@@ -139,10 +139,8 @@ class DatabaseLoaderDisplay():
         if self.loaded:
             self.__tryRemovingCheckProbabilityFrame__()
             self.app.removeLabel("Indices")
-            entryIndex = 1
-            for entry in self.database.entries:
+            for entryIndex in range(1,len(self.database.entries)+1):
                 self.app.removeLabel("Indices_" + str(entryIndex))
-                entryIndex += 1
             self.app.removeButton("Save")
             self.app.removeButton("Add Patient")
             self.app.removeButton("Check Probabilities")

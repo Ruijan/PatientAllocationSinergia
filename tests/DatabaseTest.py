@@ -151,7 +151,7 @@ class TestDatabase(unittest.TestCase):
     def __checkGroupDistribution__(self, newEntry, expectedFirstGroupProbability):
         groups = []
         countGroup = dict()
-        for index in range(1,500):
+        for _ in range(1,500):
             groups.append(self.database.getGroupFromNewEntry(newEntry))
         countGroup[self.groups[0]] = groups.count(self.groups[0])
         countGroup[self.groups[1]] = groups.count(self.groups[1])

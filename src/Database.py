@@ -77,7 +77,7 @@ class Database:
         self.__setFileAndPathFromFullpath__(fullpath)
         self.__checkReadingPath__(fullpath)
         with open(fullpath, 'r') as dbFile:
-            dbInfo = yaml.load(dbFile)
+            dbInfo = yaml.safe_load(dbFile)
             for field in dbInfo["fields"]:
                 self.fields.append(field)
                 self.ttest.append(dbInfo["fields"][field]["ttest"])
@@ -154,16 +154,12 @@ class Database:
                 groups[entry["Group"]].append(self.getLimitedValuesFromField(field).index(entry[field]))
             elif self.getFieldTypeFromField(field) == "Number":
                 groups[entry["Group"]].append(int(float(entry[field])))
-        print(groups[self.groups[0]])
-        print(groups[self.groups[1]])
         if self.getFieldTypeFromField(field) == "List":
             obs = [groups[self.groups[0]].count(0), groups[self.groups[0]].count(1)]
             obs2 = [groups[self.groups[1]].count(0), groups[self.groups[1]].count(1)]
             _, pvalue = stats.chisquare(obs, obs2)
         elif self.getFieldTypeFromField(field) == "Number":
             _, pvalue = stats.ttest_ind(groups[self.groups[0]],groups[self.groups[1]], equal_var = False)
-        print(field)
-        print(pvalue)
         return pvalue
 
     def getGroupsProbabilitiesFromNewEntry(self, newEntry):
@@ -187,11 +183,10 @@ class Database:
             pvalues[group] = minPvalue
             productsPValues[group] = productPValues
         probas = dict()
-        if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and productsPValues[group] == 0 and productsPValues[group] == 0:
+        if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and productsPValues[self.groups[0]] == 0 and productsPValues[self.groups[1]] == 0:
             probas[self.groups[0]] = 0.5
             probas[self.groups[1]] = 0.5
         elif pvalues[self.groups[0]] == pvalues[self.groups[1]]:
-            print("Used product probabilities")
             probas[self.groups[0]] = productsPValues[self.groups[0]] / (productsPValues[self.groups[0]] +
                                           productsPValues[self.groups[1]])
             probas[self.groups[1]] = productsPValues[self.groups[1]] / (productsPValues[self.groups[0]] +

@@ -7,7 +7,6 @@ Created on Sat Jun 23 14:44:52 2018
 from appJar import gui
 import sys
 sys.path.insert(0, '..')
-from DatabaseError import DatabaseError
 from DatabaseLoaderDisplay import DatabaseLoaderDisplay
 from DatabaseCreatorDisplay import DatabaseCreatorDisplay
 from WelcomeDisplay import WelcomeDisplay

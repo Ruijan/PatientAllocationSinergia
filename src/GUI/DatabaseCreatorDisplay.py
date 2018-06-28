@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from appJar import gui
 from appJar import appjar
 from Database import Database
 from DatabaseLoaderDisplay import DatabaseLoaderDisplay
