@@ -67,7 +67,7 @@ class DatabaseLoaderDisplay():
         self.app.startFrame("IndicesFrame", row=0, column=fieldIndex)
         self.app.addLabel("Indices", "Indices")
         entryIndex = 1
-        for entry in self.database.entries:
+        for _ in self.database.entries:
             self.app.addLabel("Indices_" + str(entryIndex), str(entryIndex))
             entryIndex += 1
         self.app.addLabel("PValues", "PValues")

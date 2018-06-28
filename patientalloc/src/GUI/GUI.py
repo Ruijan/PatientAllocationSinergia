@@ -59,11 +59,8 @@ class GUI():
         else:
             pass
 
-
     def getFullpathToSaveFromUser(self):
         return self.app.saveBox(title="Save database", fileName=None,
                                   dirName=None, fileExt=".db",
                                   fileTypes=[('Database', '*.db')],
                                   asFile=None, parent=None)
-
-
