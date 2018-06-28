@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from appJar import appjar
-from Database import Database
-from DatabaseLoaderDisplay import DatabaseLoaderDisplay
-
+from patientalloc.src.Database.Database import Database
+from patientalloc.src.GUI.DatabaseLoaderDisplay import DatabaseLoaderDisplay
+import os
+from pathlib import Path
+import yaml
 
 class DatabaseCreatorDisplay():
     def __init__(self, currentGui):
         self.gui = currentGui
         self.app = currentGui.app
         self.database = Database()
+        self.resPath = os.path.dirname(os.path.realpath(__file__))
+        self.resPath = os.path.split(self.resPath)
+        self.resPath = os.path.split(self.resPath[0])
+        self.resPath = os.path.join(self.resPath[0],'res')
 
     def display(self):
         self.__displayCreateDatabasePanel__()
-        self.gui.disableMenuItem()
+        self.gui.disableSaveMenu()
 
     def __displayCreateDatabasePanel__(self):
         self.app.setFont(size=14)
@@ -35,15 +40,45 @@ class DatabaseCreatorDisplay():
     def __createDatabase__(self):
         self.database.groups.append(self.app.getEntry("Group 1"))
         self.database.groups.append(self.app.getEntry("Group 2"))
-        self.file = self.gui.getFullpathToSaveFromUser()
-        if self.file is None:
-            self.app.setStatusbar("Operation Canceled", field=0)
-        else:
-            self.database.createWithFullPath(self.file)
-            self.app.removeAllWidgets()
+        if self.__getSavingModeFromSettings__() == "local":
+            if self.gui.mode == 'admin':
+                if self.database.fileName == "":
+                    self.file = self.gui.getFullpathToSaveFromUser()
+                    self.database.createWithFullPath(self.file)
+                else:
+                    self.database.create()
+            elif self.gui.mode == 'user':
+                self.database.create()
+        elif self.__getSavingModeFromSettings__() == "online":
+            fileInfo = self.__getFileLocationFromSettings__()
+            self.database.folder = fileInfo['folder']
+            self.database.fileName = fileInfo['fileName']
+            address = self.__getServerAddressFromSettings__()
+            os.system("git clone -v " + address + ' ' + self.database.folder)
+            self.database.create()
+            os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
+            os.system("rm -rf " + self.database.folder)
             databaseDisplayer = DatabaseLoaderDisplay(self.gui)
-            databaseDisplayer.database = self.database.copy()
+            databaseDisplayer.database = self.database.createCopy()
             self.gui.switchFrame(databaseDisplayer)
+
+    def __getFileLocationFromSettings__(self):
+        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
+        with open(fullpath, 'r') as guiFile:
+            guiInfo = yaml.safe_load(guiFile)
+            return {'fileName': guiInfo['fileName'], 'folder': guiInfo['folder']}
+
+    def __getServerAddressFromSettings__(self):
+        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
+        with open(fullpath, 'r') as guiFile:
+            guiInfo = yaml.safe_load(guiFile)
+            return guiInfo['server']
+
+    def __getSavingModeFromSettings__(self):
+        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
+        with open(fullpath, 'r') as guiFile:
+            guiInfo = yaml.safe_load(guiFile)
+            return guiInfo['saveMode']
 
     def __chooseFieldType__(self):
         self.app.startSubWindow("Create New Field", modal=True)
@@ -65,7 +100,7 @@ class DatabaseCreatorDisplay():
         self.app.addLabelEntry("Field Name", 1, 0, colspan=2)
         self.app.addNamedCheckBox("Use for t-test", "ttest", 2, 0)
         self.app.setStretch("none")
-        self.app.addImageButton("Add", self.__addField__, "../../res/add.png", 2, 1, colspan=4)
+        self.app.addImageButton("Add", self.__addField__, self.resPath + "/add.png", 2, 1, colspan=4)
         self.app.stopSubWindow()
         self.app.showSubWindow("Create New Field")
 
@@ -95,7 +130,7 @@ class DatabaseCreatorDisplay():
                                 column=(len(self.database.fields) % 5))
             self.app.addLabel(field, field)
             self.app.addImageButton("Remove_field_"+str(len(self.database.fields)),
-                                    self.__addField__, "../../res/delete.png")
+                                    self.__addField__, self.resPath + "/delete.png")
             self.app.stopFrame()
             self.database.addField(field, ttest, fieldType, limitedValues)
         else:

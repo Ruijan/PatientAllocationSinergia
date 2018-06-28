@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-import DatabaseError
+import patientalloc.src.Database.DatabaseError as DatabaseError
 import csv
 import yaml
 from scipy import stats
