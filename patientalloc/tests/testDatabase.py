@@ -7,18 +7,15 @@ Created on Mon Jun 18 18:28:32 2018
 """
 
 import unittest
-import sys
-sys.path.insert(0, 'src')
-sys.path.insert(0, '../src')
-from Database import Database
-import DatabaseError
+import patientalloc
 import os.path
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
-        self.database = Database()
+        self.database = patientalloc.Database()
+        dirname, _ = os.path.split(os.path.abspath(__file__))
         self.database.fileName = "database.db"
-        self.database.folder = "tests/database"
+        self.database.folder = dirname + "/database"
         self.fields = ["SubjectId", "Age", "Group"]
         self.entry = {self.fields[0]: 's01', self.fields[1]: '56', self.fields[2]: 'BCI'}
         self.ttest = [0, 1, 0]
@@ -33,7 +30,7 @@ class TestDatabase(unittest.TestCase):
 
     def testCreateDatabaseWithEmptyFileNameShouldTrow(self):
         self.database.fileName = ""
-        with self.assertRaises(DatabaseError.EmptyFileNameError):
+        with self.assertRaises(patientalloc.DatabaseError.EmptyFileNameError):
             self.database.create()
 
     def testDestroyFile(self):
@@ -42,7 +39,7 @@ class TestDatabase(unittest.TestCase):
         self.assertFalse(os.path.isfile(self.database.folder + "/" + self.database.fileName))
 
     def testDestroyFileDoesNotExistShouldThrow(self):
-        with self.assertRaises(DatabaseError.FileNotExistError):
+        with self.assertRaises(patientalloc.DatabaseError.FileNotExistError):
             self.database.destroy()
 
     def testAddField(self):
@@ -51,7 +48,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(self.database.ttest[0],self.ttest[0])
 
     def testAddEmptyFieldShouldThrow(self):
-        with self.assertRaises(DatabaseError.EmptyFieldError):
+        with self.assertRaises(patientalloc.DatabaseError.EmptyFieldError):
             self.database.addField("", False, "number")
 
     def testAddFields(self):
@@ -60,12 +57,12 @@ class TestDatabase(unittest.TestCase):
 
     def testLoadDatabaseWithEmptyFileNameShouldTrow(self):
         self.database.fileName = ""
-        with self.assertRaises(DatabaseError.EmptyFileNameError):
+        with self.assertRaises(patientalloc.DatabaseError.EmptyFileNameError):
             self.database.load()
 
     def testLoadDatabaseWithWrongFileName(self):
         self.database.fileName = "wrongDatabase.db"
-        with self.assertRaises(DatabaseError.FileNotExistError):
+        with self.assertRaises(patientalloc.DatabaseError.FileNotExistError):
             self.database.load()
 
     def testFieldsAddedToCSV(self):
@@ -106,7 +103,7 @@ class TestDatabase(unittest.TestCase):
     def testAddEntryWithWrongFieldNames(self):
         self.database.addFields(self.fields, self.ttest, self.fieldTypes)
         wrongFieldsEntry = {self.fields[0]: 's01', 'FMA': 56}
-        with self.assertRaises(DatabaseError.EntryWithUnknownFields):
+        with self.assertRaises(patientalloc.DatabaseError.EntryWithUnknownFields):
             self.database.addEntryWithGroup(wrongFieldsEntry)
 
     def testLoadingFromDBFile(self):

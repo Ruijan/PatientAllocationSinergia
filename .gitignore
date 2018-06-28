@@ -1,5 +1,10 @@
 *.csv
 *.pyc
-!tests/database/filledDatabase.csv
-!tests/database/biasedFilledDatabase.csv
+*.db
+!patientalloc/tests/database/filledDatabase.csv
+!patientalloc/tests/database/biasedFilledDatabase.csv
+!patientalloc/tests/database/filledDatabase.db
+!patientalloc/tests/database/biasedFilledDatabase.db
+patient_alloc.egg-info
 .idea
+.coverage

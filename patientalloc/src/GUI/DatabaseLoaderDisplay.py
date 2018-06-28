@@ -56,8 +56,7 @@ class DatabaseLoaderDisplay():
         self.database = Database()
         self.database.loadWithFullPath(self.file)
         self.loaded = True
-        self.app.enableMenuItem("File", "Save")
-        self.app.enableMenuItem("File", "Save as")
+        self.gui.enableSaveMenu()
         self.app.setStatusbar("File " + self.file + " loaded", field=0)
 
     def __displayDatabase__(self):
@@ -68,7 +67,7 @@ class DatabaseLoaderDisplay():
         self.app.startFrame("IndicesFrame", row=0, column=fieldIndex)
         self.app.addLabel("Indices", "Indices")
         entryIndex = 1
-        for entry in self.database.entries:
+        for _ in self.database.entries:
             self.app.addLabel("Indices_" + str(entryIndex), str(entryIndex))
             entryIndex += 1
         self.app.addLabel("PValues", "PValues")
@@ -76,8 +75,20 @@ class DatabaseLoaderDisplay():
         self.app.stopFrame()
         fieldIndex += 1
         for field in self.database.order:
-            self.app.startFrame(field, row=0, column=fieldIndex)
+            self.__createFieldFrame__(field, fieldIndex)
             fieldIndex += 1
+        self.app.startFrame("AddSubject", row=1, column=0, colspan=fieldIndex)
+        self.app.addButton("Add Patient",self.__addSubject__)
+        if self.gui.mode == 'admin':
+            self.app.addButton("Check Probabilities",self.__checkProbabilityGroups__)
+        self.app.addButton("Save",self.__save__)
+        self.app.stopFrame()
+        self.app.stopFrame()
+        self.databaseDisplayed = True
+
+    def __createFieldFrame__(self, field, fieldIndex):
+        if self.gui.mode == 'admin' or field != 'Group':
+            self.app.startFrame(field, row=0, column=fieldIndex)
             self.app.addLabel(field, field)
             entryIndex = 0
             for entry in self.database.entries:
@@ -97,13 +108,6 @@ class DatabaseLoaderDisplay():
             else:
                 self.app.addLabel("New " + field, "")
             self.app.stopFrame()
-        self.app.startFrame("AddSubject", row=1, column=0, colspan=fieldIndex)
-        self.app.addButton("Add Patient",self.__addSubject__)
-        self.app.addButton("Check Probabilities",self.__checkProbabilityGroups__)
-        self.app.addButton("Save",self.__save__)
-        self.app.stopFrame()
-        self.app.stopFrame()
-        self.databaseDisplayed = True
 
     def __addSubject__(self):
         subject = self.__createSubjectFromFormValues__()
@@ -143,26 +147,30 @@ class DatabaseLoaderDisplay():
                 self.app.removeLabel("Indices_" + str(entryIndex))
             self.app.removeButton("Save")
             self.app.removeButton("Add Patient")
-            self.app.removeButton("Check Probabilities")
+            if self.gui.mode == 'admin':
+                self.app.removeButton("Check Probabilities")
             self.app.removeLabel("PValues")
             self.app.removeLabel("New Entry")
             for field in self.database.fields:
-                self.app.removeLabel("PValue_" + field)
-
-                if field == "Group":
-                    self.app.removeLabel("New " + field)
-                else:
-                    if self.database.getFieldTypeFromField(field) == "List":
-                        self.app.removeOptionBox("New " + field)
-                    else:
-                        self.app.removeEntry("New " + field)
-                self.app.removeLabel(field)
-                for entryIndex in range(0,len(self.database.entries)):
-                    self.app.removeLabel(field + "_ " + str(entryIndex))
-                self.app.removeFrame(field)
+                self.__removeFieldColumn__(field)
             self.app.removeFrame("AddSubject")
             self.app.removeFrame("IndicesFrame")
             self.app.removeFrame("DatabaseDisplay")
+
+    def __removeFieldColumn__(self, field):
+        if self.gui.mode == 'admin' or field != 'Group':
+            self.app.removeLabel("PValue_" + field)
+            if field == "Group":
+                self.app.removeLabel("New " + field)
+            else:
+                if self.database.getFieldTypeFromField(field) == "List":
+                    self.app.removeOptionBox("New " + field)
+                else:
+                    self.app.removeEntry("New " + field)
+            self.app.removeLabel(field)
+            for entryIndex in range(0,len(self.database.entries)):
+                self.app.removeLabel(field + "_ " + str(entryIndex))
+            self.app.removeFrame(field)
 
 
     def __tryRemovingCheckProbabilityFrame__(self):
