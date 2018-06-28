@@ -4,6 +4,8 @@ import sys
 sys.path.insert(0, 'patientalloc/src/Database')
 sys.path.insert(0, 'patientalloc/src/GUI')
 from GUI import GUI
+from Database import Database
+import DatabaseError
 import argparse
 
 def main():

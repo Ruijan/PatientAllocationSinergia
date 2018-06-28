@@ -14,5 +14,7 @@ setup(name='patient-alloc',
           'scipy',
           'appjar'
       ],
+      test_suite='nose.collector',
+      tests_require=['nose'],
       scripts=['bin/patient-alloc'],
       zip_safe=False)

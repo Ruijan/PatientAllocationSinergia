@@ -13,7 +13,8 @@ install:
   - pip install codacy-coverage
 
 script:
-  - coverage run patientalloc/tests/DatabaseTest.py
+  - coverage run patientalloc/tests/testDatabase.py
+  - coverage xml
 
 after_success:
   - codecov
