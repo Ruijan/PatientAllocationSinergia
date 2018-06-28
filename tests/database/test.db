@@ -1,0 +1,28 @@
+databaseFile: test.csv
+fields:
+  Age:
+    limitedValues: []
+    ttest: 1
+    type: Number
+  Gender:
+    limitedValues: [Male, Female]
+    ttest: 1
+    type: List
+  Group:
+    limitedValues: []
+    ttest: 0
+    type: Hidden
+  Lesion Side:
+    limitedValues: [Left, Right]
+    ttest: 1
+    type: List
+  Pre-FMA:
+    limitedValues: []
+    ttest: 1
+    type: Number
+  SubjectId:
+    limitedValues: []
+    ttest: 0
+    type: Entry
+groups: [BCI, Sham]
+order: [SubjectId, Gender, Age, Pre-FMA, Lesion Side, Group]

@@ -1,7 +1,7 @@
-SubjectId,Age,Group,ttest,0,1,0,Groups,BCI,Sham
-s01,56,BCI,,,,,,,
-s02,25,BCI,,,,,,,
-s03,64,BCI,,,,,,,
-s04,68,BCI,,,,,,,
-s05,45,Sham,,,,,,,
-s06,55,Sham,,,,,,,
+SubjectId,Age,Group
+s01,56,BCI
+s02,25,BCI
+s03,64,BCI
+s04,68,BCI
+s05,45,Sham
+s06,55,Sham

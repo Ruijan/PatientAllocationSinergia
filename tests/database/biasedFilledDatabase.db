@@ -1,0 +1,22 @@
+databaseFile: biasedFilledDatabase.csv
+order: ["SubjectId", "Age", "Pre-FMA", "Group"]
+fields:
+  SubjectId:
+    type: Entry
+    ttest: 0
+    limitedValues: ''
+  Age:
+    type: Number
+    ttest: 1
+    limitedValues: ''
+  Pre-FMA:
+    type: Number
+    ttest: 1
+    limitedValues: ''
+  Group:
+    type: Hidden
+    ttest: 0
+    limitedValues: ''
+groups:
+  - BCI
+  - Sham
