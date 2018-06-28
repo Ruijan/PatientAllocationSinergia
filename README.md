@@ -17,9 +17,26 @@ You can also clone the folder with:
 ```
 git clone https://github.com/Ruijan/PatientAllocationSinergia.git
 ```
-You need pip to install the package. 
+You need pip to install the package.
 To install the package:
 
 ```
 pip install .
 ```
+
+## Launch
+To start the allocator for a user open a terminal:
+```
+patient-alloc
+```
+or
+```
+patient-alloc --mode user
+```
+The user mode allows you to load the database and assign a new patient. The group distribution is hidden and some functionnalities are limited.
+To start the allocator for an admin open a terminal:
+
+```
+patient-alloc --mode admin
+```
+The administrator mode gives you the possibility to create a new database and to visualize the distribution of patients.
