@@ -137,6 +137,42 @@ class TestDatabase(unittest.TestCase):
         newEntry = {'SubjectId': 's07', 'Age': '65', 'Pre-FMA': '2'}
         self.__checkGroupDistribution__(newEntry, 0.0)
 
+    def testAddEntryToEmptyDatabase(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        newEntry = {'SubjectId': 's01', 'Age': '65'}
+        self.__checkGroupDistribution__(newEntry, 0.5)
+
+    def testAddEntryToOneLineDatabase(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's02', 'Age': '45'}
+        self.__checkGroupDistribution__(newEntry, 0.5)
+
+    def testAddEntryToTwoLinesDatabase(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's02', 'Age': '30', 'Group': 'BCI'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's03', 'Age': '50'}
+        self.__checkGroupDistribution__(newEntry, 0.5)
+
+    def testAddEntryToThreeLinesDatabase(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's02', 'Age': '30', 'Group': 'BCI'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's02', 'Age': '40', 'Group': 'BCI'}
+        self.database.addEntryWithGroup(newEntry)
+        newEntry = {'SubjectId': 's03', 'Age': '30'}
+        self.__checkGroupDistribution__(newEntry, 0.81)
+
     def __checkCorrectDBInfo__(self):
         fieldIndex = 0
         for field in self.fields:
