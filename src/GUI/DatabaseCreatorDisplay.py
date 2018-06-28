@@ -103,14 +103,15 @@ class DatabaseCreatorDisplay():
             self.app.setStatusbar("Operation Canceled: Field already exists", field=0)
 
     def removeFrame(self):
-        try:
-            self.app.removeLabel("Title")
-            self.app.removeEntry("Group 1")
-            self.app.removeEntry("Group 2")
-            self.app.removeEntry("Add new field")
-            self.app.removeButton("Create")
-            self.app.removeFrame("Create Button")
-            self.app.removeFrame("emptyFrame")
-            self.app.removeFrame("Information")
-        except appjar.ItemLookupError:
-            pass
+        #try:
+        self.app.removeLabel("Title")
+        self.app.removeEntry("Group 1")
+        self.app.removeEntry("Group 2")
+        self.app.removeOptionBox("Add new field")
+        self.app.removeButton("Choose")
+        self.app.removeButton("Create")
+        self.app.removeFrame("Create Button")
+        self.app.removeFrame("emptyFrame")
+        self.app.removeFrame("Information")
+        #except appjar.ItemLookupError:
+            #pass

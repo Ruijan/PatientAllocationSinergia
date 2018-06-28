@@ -157,10 +157,8 @@ class DatabaseLoaderDisplay():
                     else:
                         self.app.removeEntry("New " + field)
                 self.app.removeLabel(field)
-                entryIndex = 0
-                for entry in self.database.entries:
+                for entryIndex in range(0,len(self.database.entries)):
                     self.app.removeLabel(field + "_ " + str(entryIndex))
-                    entryIndex += 1
                 self.app.removeFrame(field)
             self.app.removeFrame("AddSubject")
             self.app.removeFrame("IndicesFrame")
