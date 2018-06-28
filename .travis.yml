@@ -11,6 +11,7 @@ install:
   - pip install scipy
   - pip install pyyaml
   - pip install codacy-coverage
+  - pip install .
 
 script:
   - coverage run patientalloc/tests/testDatabase.py
