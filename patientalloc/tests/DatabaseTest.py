@@ -8,8 +8,8 @@ Created on Mon Jun 18 18:28:32 2018
 
 import unittest
 import sys
-sys.path.insert(0, 'src')
-sys.path.insert(0, '../src')
+sys.path.insert(0, 'src/Database')
+sys.path.insert(0, '../src/Database')
 from Database import Database
 import DatabaseError
 import os.path

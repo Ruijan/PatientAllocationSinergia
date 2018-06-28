@@ -5,8 +5,6 @@ Created on Sat Jun 23 14:44:52 2018
 @author: cnbi
 """
 from appJar import gui
-import sys
-sys.path.insert(0, '..')
 from DatabaseLoaderDisplay import DatabaseLoaderDisplay
 from DatabaseCreatorDisplay import DatabaseCreatorDisplay
 from WelcomeDisplay import WelcomeDisplay
@@ -54,6 +52,4 @@ class GUI():
                                   fileTypes=[('Database', '*.db')],
                                   asFile=None, parent=None)
 
-if __name__ == '__main__':
-    app = GUI()
-    app.start()
+
