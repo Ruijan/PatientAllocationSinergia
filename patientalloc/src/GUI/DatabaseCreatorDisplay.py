@@ -40,7 +40,7 @@ class DatabaseCreatorDisplay():
     def __createDatabase__(self):
         self.database.groups.append(self.app.getEntry("Group 1"))
         self.database.groups.append(self.app.getEntry("Group 2"))
-        if self.__getSavingModeFromSettings__() == "local":
+        if self.gui.settings.saveMode == "local":
             if self.gui.mode == 'admin':
                 if self.database.fileName == "":
                     self.file = self.gui.getFullpathToSaveFromUser()
@@ -49,36 +49,16 @@ class DatabaseCreatorDisplay():
                     self.database.create()
             elif self.gui.mode == 'user':
                 self.database.create()
-        elif self.__getSavingModeFromSettings__() == "online":
-            fileInfo = self.__getFileLocationFromSettings__()
-            self.database.folder = fileInfo['folder']
-            self.database.fileName = fileInfo['fileName']
-            address = self.__getServerAddressFromSettings__()
-            os.system("git clone -v " + address + ' ' + self.database.folder)
+        elif self.gui.settings.saveMode == "online":
+            self.database.folder = self.gui.settings.folder
+            self.database.fileName = self.gui.settings.fileName
+            os.system("git clone -v " + self.gui.settings.server + ' ' + self.database.folder)
             self.database.create()
             os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
             os.system("rm -rf " + self.database.folder)
             databaseDisplayer = DatabaseLoaderDisplay(self.gui)
             databaseDisplayer.database = self.database.createCopy()
             self.gui.switchFrame(databaseDisplayer)
-
-    def __getFileLocationFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return {'fileName': guiInfo['fileName'], 'folder': guiInfo['folder']}
-
-    def __getServerAddressFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return guiInfo['server']
-
-    def __getSavingModeFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return guiInfo['saveMode']
 
     def __chooseFieldType__(self):
         self.app.startSubWindow("Create New Field", modal=True)

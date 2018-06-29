@@ -5,7 +5,6 @@ from pathlib import Path
 from patientalloc.src.Database.Database import Database
 import patientalloc.src.Database.DatabaseError as DatabaseError
 from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
-import yaml
 import os
 
 
@@ -31,7 +30,7 @@ class DatabaseLoaderDisplay():
             self.database.createWithFullPath(self.file)
 
     def __save__(self):
-        if self.__getSavingModeFromSettings__() == "local":
+        if self.gui.settings.saveMode == "local":
             if self.gui.mode == 'admin':
                 if self.database.fileName == "":
                     self.file = self.gui.getFullpathToSaveFromUser()
@@ -40,12 +39,10 @@ class DatabaseLoaderDisplay():
                     self.database.create()
             elif self.gui.mode == 'user':
                 self.database.create()
-        elif self.__getSavingModeFromSettings__() == "online":
-            fileInfo = self.__getFileLocationFromSettings__()
-            self.database.folder = fileInfo['folder']
-            self.database.fileName = fileInfo['fileName']
-            address = self.__getServerAddressFromSettings__()
-            os.system("git clone -v " + address + ' ' + self.database.folder)
+        elif self.gui.settings.saveMode == "online":
+            self.database.folder = self.gui.settings.folder
+            self.database.fileName = self.gui.settings.fileName
+            os.system("git clone -v " + self.gui.settings.server + ' ' + self.database.folder)
             self.database.create()
             os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
             os.system("rm -rf " + self.database.folder)
@@ -53,7 +50,7 @@ class DatabaseLoaderDisplay():
 
     def __tryLoadingDatabase__(self):
         try:
-            if self.__getSavingModeFromSettings__() == "local":
+            if self.gui.settings.saveMode == "local":
                 path = str(Path.home()) + "/dev/PatientAllocationSinergia/tests/database"
                 self.file = self.app.openBox(title="Load database file",
                                                  dirName=path,
@@ -62,11 +59,9 @@ class DatabaseLoaderDisplay():
                                                  parent=None)
                 if self.file is not None:
                     self.file = self.file.name
-            elif self.__getSavingModeFromSettings__() == "online":
-                fileInfo = self.__getFileLocationFromSettings__()
-                self.file = os.path.join(fileInfo['folder'], fileInfo['fileName'])
-                address = self.__getServerAddressFromSettings__()
-                os.system("git clone " + address + " " + fileInfo['folder'])
+            elif self.gui.settings.saveMode == "online":
+                self.file = os.path.join(self.gui.settings.folder, self.gui.settings.fileName)
+                os.system("git clone " + self.gui.settings.server + " " + self.gui.settings.folder)
             if self.file is None:
                 self.app.setStatusbar("Operation Canceled", field=0)
                 self.gui.switchFrame(WelcomeDisplay(self.app))
@@ -76,24 +71,6 @@ class DatabaseLoaderDisplay():
         except DatabaseError.DatabaseError as error:
             self.app.setStatusbar(error.message, field=0)
             print(error.message)
-
-    def __getFileLocationFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return {'fileName': guiInfo['fileName'], 'folder': guiInfo['folder']}
-
-    def __getServerAddressFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return guiInfo['server']
-
-    def __getSavingModeFromSettings__(self):
-        fullpath = str(Path.home()) + "/.patientalloc/settings.yml"
-        with open(fullpath, 'r') as guiFile:
-            guiInfo = yaml.safe_load(guiFile)
-            return guiInfo['saveMode']
 
     def __loadDatabase__(self):
         self.database = Database()

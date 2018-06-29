@@ -9,15 +9,18 @@ from patientalloc.src.GUI.DatabaseLoaderDisplay import DatabaseLoaderDisplay
 from patientalloc.src.GUI.DatabaseCreatorDisplay import DatabaseCreatorDisplay
 from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
 from patientalloc.src.GUI.SettingsDisplay import SettingsDisplay
-from pathlib import Path
+from patientalloc.src.GUI.GUISettings import GUISettings
 import os
-import yaml
 
 
 class GUI():
     def __init__(self, mode):
         self.mode = mode
-        self.__createSettings__()
+        self.settings = GUISettings()
+        if not os.path.exists(self.settings.settingsFile):
+            self.settings.createSettingsFile()
+        else:
+            self.settings.load()
         self.app = gui("Patient allocation")
         if self.mode == 'admin':
             self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
@@ -30,20 +33,7 @@ class GUI():
         self.app.addStatusbar(fields=1, side="LEFT")
         self.app.setStatusbarWidth(120, 0)
         self.app.setStretch("COLUMN")
-        self.settings = SettingsDisplay(self.app)
-
-    def __createSettings__(self):
-        settingsPath = str(Path.home()) + '/.patientalloc'
-        if not os.path.exists(settingsPath):
-            os.makedirs(settingsPath)
-        fullpath = str(Path.home()) + '/.patientalloc/settings.yml'
-        if not os.path.exists(fullpath):
-            with open(fullpath, 'w') as guiInfo:
-                document = {'fileName' : 'sinergia.db',
-                            'folder':  str(Path.home()) + '/.patientalloc/SinergiaPatients',
-                            'saveMode': 'local',
-                            'server': ''}
-                yaml.dump(document, guiInfo)
+        self.settingsDisplay = SettingsDisplay(self.app)
 
     def start(self):
         self.app.go()
@@ -77,7 +67,7 @@ class GUI():
         elif menu == "Save as":
             self.currentFrame.handleCommand("Save as")
         elif menu == "Settings":
-            self.settings.display()
+            self.settingsDisplay.display()
         else:
             pass
 

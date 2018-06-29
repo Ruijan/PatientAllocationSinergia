@@ -4,6 +4,8 @@ import sys
 from patientalloc.src.GUI.GUI import GUI
 from patientalloc.src.Database.Database import Database
 import patientalloc.src.Database.DatabaseError as DatabaseError
+from patientalloc.src.GUI.GUISettings import GUISettings
+
 import argparse
 
 def main():
