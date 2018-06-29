@@ -12,7 +12,6 @@ class DatabaseLoaderDisplay():
     def __init__(self, currentGui):
         self.gui = currentGui
         self.app = currentGui.app
-        self.file = None
         self.database = None
         self.loaded = False
 
@@ -24,60 +23,23 @@ class DatabaseLoaderDisplay():
 
     def handleCommand(self, command):
         if command == "Save":
-            self.__save__()
+            self.gui.databaseHandler.saveDatabase()
         elif command == "Save as":
             self.file = self.gui.getFullpathToSaveFromUser()
             self.database.createWithFullPath(self.file)
 
-    def __save__(self):
-        if self.gui.settings.saveMode == "local":
-            if self.gui.mode == 'admin':
-                if self.database.fileName == "":
-                    self.file = self.gui.getFullpathToSaveFromUser()
-                    self.database.createWithFullPath(self.file)
-                else:
-                    self.database.create()
-            elif self.gui.mode == 'user':
-                self.database.create()
-        elif self.gui.settings.saveMode == "online":
-            self.database.folder = self.gui.settings.folder
-            self.database.fileName = self.gui.settings.fileName
-            os.system("git clone -v " + self.gui.settings.server + ' ' + self.database.folder)
-            self.database.create()
-            os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
-            os.system("rm -rf " + self.database.folder)
-
-
     def __tryLoadingDatabase__(self):
         try:
-            if self.gui.settings.saveMode == "local":
-                path = str(Path.home()) + "/dev/PatientAllocationSinergia/tests/database"
-                self.file = self.app.openBox(title="Load database file",
-                                                 dirName=path,
-                                                 fileTypes=[('Database', '*.db')],
-                                                 asFile=True,
-                                                 parent=None)
-                if self.file is not None:
-                    self.file = self.file.name
-            elif self.gui.settings.saveMode == "online":
-                self.file = os.path.join(self.gui.settings.folder, self.gui.settings.fileName)
-                os.system("git clone " + self.gui.settings.server + " " + self.gui.settings.folder)
-            if self.file is None:
-                self.app.setStatusbar("Operation Canceled", field=0)
-                self.gui.switchFrame(WelcomeDisplay(self.app))
-            else:
-                self.__loadDatabase__()
-                os.system("rm -rf " + self.database.folder)
+            self.gui.databaseHandler.loadDatabase()
+            if self.gui.databaseHandler.isDatabaseLoaded():
+                self.database = self.gui.databaseHandler.database
+                self.loaded = True
+                self.gui.enableSaveMenu()
+                self.gui.databaseHandler.secureDatabase()
         except DatabaseError.DatabaseError as error:
             self.app.setStatusbar(error.message, field=0)
             print(error.message)
 
-    def __loadDatabase__(self):
-        self.database = Database()
-        self.database.loadWithFullPath(self.file)
-        self.loaded = True
-        self.gui.enableSaveMenu()
-        self.app.setStatusbar("File " + self.file + " loaded", field=0)
 
     def __displayDatabase__(self):
         self.app.setFont(size=14)
@@ -101,7 +63,7 @@ class DatabaseLoaderDisplay():
         self.app.addButton("Add Patient",self.__addSubject__)
         if self.gui.mode == 'admin':
             self.app.addButton("Check Probabilities",self.__checkProbabilityGroups__)
-        self.app.addButton("Save",self.__save__)
+        self.app.addButton("Save",self.gui.databaseHandler.saveDatabase)
         self.app.stopFrame()
         self.app.stopFrame()
         self.databaseDisplayed = True
@@ -191,7 +153,6 @@ class DatabaseLoaderDisplay():
             for entryIndex in range(0,len(self.database.entries)):
                 self.app.removeLabel(field + "_ " + str(entryIndex))
             self.app.removeFrame(field)
-
 
     def __tryRemovingCheckProbabilityFrame__(self):
         try:

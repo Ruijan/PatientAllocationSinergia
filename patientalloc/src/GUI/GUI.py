@@ -10,6 +10,8 @@ from patientalloc.src.GUI.DatabaseCreatorDisplay import DatabaseCreatorDisplay
 from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
 from patientalloc.src.GUI.SettingsDisplay import SettingsDisplay
 from patientalloc.src.GUI.GUISettings import GUISettings
+from patientalloc.src.Database.DatabaseHandler import DatabaseHandler
+
 import os
 
 
@@ -17,6 +19,7 @@ class GUI():
     def __init__(self, mode):
         self.mode = mode
         self.settings = GUISettings()
+        self.databaseHandler = DatabaseHandler(self)
         if not os.path.exists(self.settings.settingsFile):
             self.settings.createSettingsFile()
         else:
@@ -33,7 +36,7 @@ class GUI():
         self.app.addStatusbar(fields=1, side="LEFT")
         self.app.setStatusbarWidth(120, 0)
         self.app.setStretch("COLUMN")
-        self.settingsDisplay = SettingsDisplay(self.app)
+        self.settingsDisplay = SettingsDisplay(self.app, self.settings)
 
     def start(self):
         self.app.go()
