@@ -2,11 +2,13 @@
 from patientalloc.src.Database.Database import Database
 from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
 import os
+import git
 
 class DatabaseHandler():
     def __init__(self, gui):
         self.gui = gui
         self.database = None
+        self.gitRepo = None
         self.file = ''
 
     def loadDatabase(self):
@@ -19,13 +21,13 @@ class DatabaseHandler():
             if self.file is not None:
                 self.file = self.file.name
         elif self.gui.settings.saveMode == "online":
+            self.gui.app.setStatusbar("Loading database...", field=0)
+            self.__loadGitRepo__()
             self.file = os.path.join(self.gui.settings.folder, self.gui.settings.fileName)
-            os.system("git clone " + self.gui.settings.server + " " + self.gui.settings.folder)
         if self.file is None:
             self.gui.app.setStatusbar("Operation Canceled", field=0)
             self.gui.switchFrame(WelcomeDisplay(self.gui.app, self.gui))
         else:
-            self.gui.app.setStatusbar("Loading database...", field=0)
             self.database = Database()
             self.database.loadWithFullPath(self.file)
             self.gui.app.setStatusbar("File " + self.file + " loaded", field=0)
@@ -44,14 +46,26 @@ class DatabaseHandler():
             self.gui.app.setStatusbar("Saving database...", field=0)
             self.database.folder = self.gui.settings.folder
             self.database.fileName = self.gui.settings.fileName
-            os.system("git clone -v " + self.gui.settings.server + ' ' + self.database.folder)
+            self.__loadGitRepo__()
             self.database.create()
-            os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
+            self.gitRepo.index.add([os.path.join(self.database.folder, self.database.fileName)])
+            self.gitRepo.index.add([os.path.join(self.database.folder, self.database.fileName.replace('.db', '.csv'))])
+            self.gitRepo.index.commit('Updating database')
+            self.gitRepo.remotes.origin.push()
             self.secureDatabase()
             self.gui.app.setStatusbar("Database saved", field=0)
 
     def secureDatabase(self):
-        os.system("rm -rf " + self.database.folder)
+        os.system('rm ' + os.path.join(self.database.folder, self.database.fileName.replace('.db', '.csv')))
+
+    def __loadGitRepo__(self):
+        if os.path.exists(self.gui.settings.folder):
+                self.gitRepo = git.Repo(self.gui.settings.folder)
+                self.gitRepo.head.reset(index=True, working_tree=True)
+                self.gitRepo.remotes.origin.pull()
+        else:
+            self.gitRepo = git.Repo.clone_from(self.gui.settings.server, self.gui.settings.folder, branch='master')
+
 
     def getFullpathToSaveFromUser(self):
         return self.app.saveBox(title="Save database", fileName=None,

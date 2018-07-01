@@ -3,14 +3,12 @@
 from patientalloc.src.Database.Database import Database
 from patientalloc.src.GUI.DatabaseLoaderDisplay import DatabaseLoaderDisplay
 import os
-from pathlib import Path
-import yaml
 
 class DatabaseCreatorDisplay():
     def __init__(self, currentGui):
         self.gui = currentGui
         self.app = currentGui.app
-        self.database = Database()
+        self.gui.databaseHandler.database = Database()
         self.resPath = os.path.dirname(os.path.realpath(__file__))
         self.resPath = os.path.split(self.resPath)
         self.resPath = os.path.split(self.resPath[0])
@@ -38,26 +36,24 @@ class DatabaseCreatorDisplay():
         self.app.stopFrame()
 
     def __createDatabase__(self):
-        self.database.groups.append(self.app.getEntry("Group 1"))
-        self.database.groups.append(self.app.getEntry("Group 2"))
+        self.gui.databaseHandler.database.groups.append(self.app.getEntry("Group 1"))
+        self.gui.databaseHandler.database.groups.append(self.app.getEntry("Group 2"))
         if self.gui.settings.saveMode == "local":
             if self.gui.mode == 'admin':
                 if self.database.fileName == "":
                     self.file = self.gui.getFullpathToSaveFromUser()
-                    self.database.createWithFullPath(self.file)
+                    self.gui.databaseHandler.database.createWithFullPath(self.file)
                 else:
-                    self.database.create()
+                    self.gui.databaseHandler.database.create()
             elif self.gui.mode == 'user':
-                self.database.create()
+                self.gui.databaseHandler.database.create()
         elif self.gui.settings.saveMode == "online":
-            self.database.folder = self.gui.settings.folder
-            self.database.fileName = self.gui.settings.fileName
-            os.system("git clone -v " + self.gui.settings.server + ' ' + self.database.folder)
-            self.database.create()
-            os.system("cd " + self.database.folder + " ; git add . ; git commit -m 'saving database' ; git push")
-            os.system("rm -rf " + self.database.folder)
+            self.gui.databaseHandler.database.folder = self.gui.settings.folder
+            self.gui.databaseHandler.database.fileName = self.gui.settings.fileName
+            self.gui.databaseHandler.database.create()
+            self.gui.databaseHandler.saveDatabase()
+            self.gui.databaseHandler.secureDatabase()
             databaseDisplayer = DatabaseLoaderDisplay(self.gui)
-            databaseDisplayer.database = self.database.createCopy()
             self.gui.switchFrame(databaseDisplayer)
 
     def __chooseFieldType__(self):
@@ -80,7 +76,8 @@ class DatabaseCreatorDisplay():
         self.app.addLabelEntry("Field Name", 1, 0, colspan=2)
         self.app.addNamedCheckBox("Use for t-test", "ttest", 2, 0)
         self.app.setStretch("none")
-        self.app.addImageButton("Add", self.__addField__, self.resPath + "/add.png", 2, 1, colspan=4)
+        self.app.addButton("Cancel Field", self.__removeAddFieldWindow__, 3, 0, colspan=2)
+        self.app.addImageButton("Add", self.__addField__, self.resPath + "/add.png", 3, 2, colspan=2)
         self.app.stopSubWindow()
         self.app.showSubWindow("Create New Field")
 
@@ -98,23 +95,28 @@ class DatabaseCreatorDisplay():
             limitedValues = newLimitedValues
             print(newLimitedValues)
         ttest = self.app.getCheckBox("ttest")
+        self.__removeAddFieldWindow__()
+        if field not in self.gui.databaseHandler.database.fields:
+            self.app.startFrame("frame_"+field,
+                                row=int(1+len(self.gui.databaseHandler.database.fields)/5),
+                                column=(len(self.gui.databaseHandler.database.fields) % 5))
+            self.app.addLabel(field, field)
+            self.app.addImageButton("Remove_field_"+field,
+                                    self.__addField__, self.resPath + "/delete.png")
+            self.app.stopFrame()
+            self.gui.databaseHandler.database.addField(field, ttest, fieldType, limitedValues)
+        else:
+            self.app.setStatusbar("Operation Canceled: Field already exists", field=0)
+
+
+    def __removeAddFieldWindow__(self):
         if self.app.getOptionBox("Add new field") == "List":
             self.app.removeEntry("Limited Values")
         self.app.removeEntry("Field Name")
+        self.app.removeButton("Cancel Field")
         self.app.removeButton("Add")
         self.app.removeCheckBox("ttest")
         self.app.destroySubWindow("Create New Field")
-        if field not in self.database.fields:
-            self.app.startFrame("field_"+str(len(self.database.fields)),
-                                row=int(1+len(self.database.fields)/5),
-                                column=(len(self.database.fields) % 5))
-            self.app.addLabel(field, field)
-            self.app.addImageButton("Remove_field_"+str(len(self.database.fields)),
-                                    self.__addField__, self.resPath + "/delete.png")
-            self.app.stopFrame()
-            self.database.addField(field, ttest, fieldType, limitedValues)
-        else:
-            self.app.setStatusbar("Operation Canceled: Field already exists", field=0)
 
     def removeFrame(self):
         #try:
@@ -122,6 +124,11 @@ class DatabaseCreatorDisplay():
         self.app.removeEntry("Group 1")
         self.app.removeEntry("Group 2")
         self.app.removeOptionBox("Add new field")
+        for field in self.gui.databaseHandler.database.fields:
+            if field != "Group":
+                self.app.removeLabel(field)
+                self.app.removeButton("Remove_field_"+field)
+                self.app.removeFrame("frame_"+field)
         self.app.removeButton("Choose")
         self.app.removeButton("Create")
         self.app.removeFrame("Create Button")
