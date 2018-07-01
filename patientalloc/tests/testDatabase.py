@@ -194,7 +194,3 @@ class TestDatabase(unittest.TestCase):
     def tearDown(self):
         if self.created:
             self.database.destroy()
-
-
-if __name__ == '__main__':
-    unittest.main()
