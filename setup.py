@@ -12,7 +12,8 @@ setup(name='patient-alloc',
       install_requires=[
           'pyyaml',
           'scipy',
-          'appjar'
+          'appjar',
+          'gitpython'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],

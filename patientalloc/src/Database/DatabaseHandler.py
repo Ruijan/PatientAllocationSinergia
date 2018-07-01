@@ -56,7 +56,7 @@ class DatabaseHandler():
             self.gui.app.setStatusbar("Database saved", field=0)
 
     def secureDatabase(self):
-        os.system('rm ' + os.path.join(self.database.folder, self.database.fileName.replace('.db', '.csv')))
+        os.remove(os.path.join(self.database.folder, self.database.fileName.replace('.db', '.csv')))
 
     def __loadGitRepo__(self):
         if os.path.exists(self.gui.settings.folder):
