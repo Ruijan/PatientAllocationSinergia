@@ -5,13 +5,25 @@ Created on Sat Jun 23 14:44:52 2018
 @author: cnbi
 """
 from appJar import gui
-from DatabaseLoaderDisplay import DatabaseLoaderDisplay
-from DatabaseCreatorDisplay import DatabaseCreatorDisplay
-from WelcomeDisplay import WelcomeDisplay
+from patientalloc.src.GUI.DatabaseLoaderDisplay import DatabaseLoaderDisplay
+from patientalloc.src.GUI.DatabaseCreatorDisplay import DatabaseCreatorDisplay
+from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
+from patientalloc.src.GUI.SettingsDisplay import SettingsDisplay
+from patientalloc.src.GUI.GUISettings import GUISettings
+from patientalloc.src.Database.DatabaseHandler import DatabaseHandler
+
+import os
+
 
 class GUI():
     def __init__(self, mode):
         self.mode = mode
+        self.settings = GUISettings()
+        self.databaseHandler = DatabaseHandler(self)
+        if not os.path.exists(self.settings.settingsFile):
+            self.settings.createSettingsFile()
+        else:
+            self.settings.load()
         self.app = gui("Patient allocation")
         if self.mode == 'admin':
             self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
@@ -24,6 +36,7 @@ class GUI():
         self.app.addStatusbar(fields=1, side="LEFT")
         self.app.setStatusbarWidth(120, 0)
         self.app.setStretch("COLUMN")
+        self.settingsDisplay = SettingsDisplay(self.app, self.settings)
 
     def start(self):
         self.app.go()
@@ -56,6 +69,8 @@ class GUI():
             self.currentFrame.handleCommand("Save")
         elif menu == "Save as":
             self.currentFrame.handleCommand("Save as")
+        elif menu == "Settings":
+            self.settingsDisplay.display()
         else:
             pass
 

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'patientalloc/src/Database')
-sys.path.insert(0, 'patientalloc/src/GUI')
-from GUI import GUI
-from Database import Database
-import DatabaseError
+from patientalloc.src.GUI.GUI import GUI
+from patientalloc.src.Database.Database import Database
+import patientalloc.src.Database.DatabaseError as DatabaseError
+from patientalloc.src.GUI.GUISettings import GUISettings
+from patientalloc.src.Database.DatabaseHandler import DatabaseHandler
+
 import argparse
 
 def main():

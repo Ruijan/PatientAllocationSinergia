@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
-import DatabaseError
+import patientalloc.src.Database.DatabaseError as DatabaseError
 import csv
 import yaml
 from scipy import stats
+import math
 import random
 from datetime import datetime
 
@@ -171,17 +172,19 @@ class Database:
             newEntryGroup["Group"] = group
             database.addEntryWithGroup(newEntryGroup)
             minPvalue = 1
-            productPValues = 1
+            productPValue = 1
             for field in database.fields:
                 try:
                     pvalue = database.getPValue(field)
+                    if math.isnan(pvalue):
+                        pvalue = 1
                     if pvalue < minPvalue:
                         minPvalue = pvalue
-                    productPValues *= pvalue
+                    productPValue *= pvalue
                 except DatabaseError.CannotComputeTTestOnField:
                     pass
             pvalues[group] = minPvalue
-            productsPValues[group] = productPValues
+            productsPValues[group] = productPValue
         probas = dict()
         if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and productsPValues[self.groups[0]] == 0 and productsPValues[self.groups[1]] == 0:
             probas[self.groups[0]] = 0.5

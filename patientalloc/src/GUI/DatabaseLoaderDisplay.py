@@ -2,15 +2,16 @@
 
 from appJar import appjar
 from pathlib import Path
-from Database import Database
-import DatabaseError
-from WelcomeDisplay import WelcomeDisplay
+from patientalloc.src.Database.Database import Database
+import patientalloc.src.Database.DatabaseError as DatabaseError
+from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
+import os
+
 
 class DatabaseLoaderDisplay():
     def __init__(self, currentGui):
         self.gui = currentGui
         self.app = currentGui.app
-        self.file = None
         self.database = None
         self.loaded = False
 
@@ -22,42 +23,23 @@ class DatabaseLoaderDisplay():
 
     def handleCommand(self, command):
         if command == "Save":
-            self.__save__()
+            self.gui.databaseHandler.saveDatabase()
         elif command == "Save as":
             self.file = self.gui.getFullpathToSaveFromUser()
             self.database.createWithFullPath(self.file)
 
-    def __save__(self):
-        if self.database.fileName == "":
-            self.file = self.gui.getFullpathToSaveFromUser()
-            self.database.createWithFullPath(self.file)
-        else:
-            self.database.create()
-
     def __tryLoadingDatabase__(self):
         try:
-            path = str(Path.home()) + "/dev/PatientAllocationSinergia/tests/database"
-            self.file = self.app.openBox(title="Load database file",
-                                             dirName=path,
-                                             fileTypes=[('Database', '*.db')],
-                                             asFile=True,
-                                             parent=None)
-            if self.file is None:
-                self.app.setStatusbar("Operation Canceled", field=0)
-                self.gui.switchFrame(WelcomeDisplay(self.app))
-            else:
-                self.file = self.file.name
-                self.__loadDatabase__()
+            self.gui.databaseHandler.loadDatabase()
+            if self.gui.databaseHandler.isDatabaseLoaded():
+                self.database = self.gui.databaseHandler.database
+                self.loaded = True
+                self.gui.enableSaveMenu()
+                self.gui.databaseHandler.secureDatabase()
         except DatabaseError.DatabaseError as error:
             self.app.setStatusbar(error.message, field=0)
             print(error.message)
 
-    def __loadDatabase__(self):
-        self.database = Database()
-        self.database.loadWithFullPath(self.file)
-        self.loaded = True
-        self.gui.enableSaveMenu()
-        self.app.setStatusbar("File " + self.file + " loaded", field=0)
 
     def __displayDatabase__(self):
         self.app.setFont(size=14)
@@ -81,7 +63,7 @@ class DatabaseLoaderDisplay():
         self.app.addButton("Add Patient",self.__addSubject__)
         if self.gui.mode == 'admin':
             self.app.addButton("Check Probabilities",self.__checkProbabilityGroups__)
-        self.app.addButton("Save",self.__save__)
+        self.app.addButton("Save",self.gui.databaseHandler.saveDatabase)
         self.app.stopFrame()
         self.app.stopFrame()
         self.databaseDisplayed = True
@@ -171,7 +153,6 @@ class DatabaseLoaderDisplay():
             for entryIndex in range(0,len(self.database.entries)):
                 self.app.removeLabel(field + "_ " + str(entryIndex))
             self.app.removeFrame(field)
-
 
     def __tryRemovingCheckProbabilityFrame__(self):
         try:
