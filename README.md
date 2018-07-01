@@ -40,3 +40,7 @@ To start the allocator for an admin open a terminal:
 patient-alloc --mode admin
 ```
 The administrator mode gives you the possibility to create a new database and to visualize the distribution of patients.
+
+## Settings
+The settings allows you to define if you want to save the database locally or online. To save online the database, you should provide a git url. It can be Github, c4Science, bitbucket or any of the existing server that handles git url. If you use an ssh url, be sure to add the ssh key to your computer before creating the database. 
+In order to save the database at the correct place, please provide the folder name where it will be downloaded: pathToFolder + nameOfTheGitFolder. The filename is the filename of the dabase.
