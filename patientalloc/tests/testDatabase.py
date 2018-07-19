@@ -184,12 +184,12 @@ class TestDatabase(unittest.TestCase):
     def __checkGroupDistribution__(self, newEntry, expectedFirstGroupProbability):
         groups = []
         countGroup = dict()
-        for _ in range(1,500):
+        for _ in range(1,600):
             groups.append(self.database.getGroupFromNewEntry(newEntry))
         countGroup[self.groups[0]] = groups.count(self.groups[0])
         countGroup[self.groups[1]] = groups.count(self.groups[1])
         proba = countGroup[self.groups[0]]/(countGroup[self.groups[1]] + countGroup[self.groups[1]])
-        self.assertTrue(abs(proba - expectedFirstGroupProbability) <= 0.1)
+        self.assertTrue(abs(proba - expectedFirstGroupProbability) <= 0.15)
 
     def tearDown(self):
         if self.created:

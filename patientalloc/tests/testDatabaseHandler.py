@@ -7,9 +7,8 @@ from unittest.mock import MagicMock
 
 class testDatabaseHandler(unittest.TestCase):
     def testDatabaseHandlerCreation(self):
-        mock = MagicMock()
-        self.databaseHandler = patientalloc.DatabaseHandler(mock)
-        self.assertEqual(self.databaseHandler.gui, mock)
-        self.assertEqual(self.databaseHandler.database, None)
-        self.assertEqual(self.databaseHandler.gitRepo, None)
-        self.assertEqual(self.databaseHandler.file, '')
+        appMock = MagicMock()
+        databaseHandlerMock = MagicMock()
+        self.databaseHandler = patientalloc.GuiDatabaseHandler(appMock, databaseHandlerMock)
+        self.assertEqual(self.databaseHandler.databaseHandler, databaseHandlerMock)
+        self.assertEqual(self.databaseHandler.app, appMock)

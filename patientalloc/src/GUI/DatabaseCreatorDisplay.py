@@ -8,7 +8,7 @@ class DatabaseCreatorDisplay():
     def __init__(self, currentGui):
         self.gui = currentGui
         self.app = currentGui.app
-        self.gui.databaseHandler.database = Database()
+        self.database = Database()
         self.resPath = os.path.dirname(os.path.realpath(__file__))
         self.resPath = os.path.split(self.resPath)
         self.resPath = os.path.split(self.resPath[0])
@@ -36,25 +36,11 @@ class DatabaseCreatorDisplay():
         self.app.stopFrame()
 
     def __createDatabase__(self):
-        self.gui.databaseHandler.database.groups.append(self.app.getEntry("Group 1"))
-        self.gui.databaseHandler.database.groups.append(self.app.getEntry("Group 2"))
-        if self.gui.settings.saveMode == "local":
-            if self.gui.mode == 'admin':
-                if self.database.fileName == "":
-                    self.file = self.gui.getFullpathToSaveFromUser()
-                    self.gui.databaseHandler.database.createWithFullPath(self.file)
-                else:
-                    self.gui.databaseHandler.database.create()
-            elif self.gui.mode == 'user':
-                self.gui.databaseHandler.database.create()
-        elif self.gui.settings.saveMode == "online":
-            self.gui.databaseHandler.database.folder = self.gui.settings.folder
-            self.gui.databaseHandler.database.fileName = self.gui.settings.fileName
-            self.gui.databaseHandler.database.create()
-            self.gui.databaseHandler.saveDatabase()
-            self.gui.databaseHandler.secureDatabase()
-            databaseDisplayer = DatabaseLoaderDisplay(self.gui)
-            self.gui.switchFrame(databaseDisplayer)
+        self.database.groups.append(self.app.getEntry("Group 1"))
+        self.database.groups.append(self.app.getEntry("Group 2"))
+        self.gui.databaseHandler.saveDatabase(self.database, self.gui.getDatabaseFolder(), self.gui.getDatabaseFilename())
+        databaseDisplayer = DatabaseLoaderDisplay(self.gui)
+        self.gui.switchFrame(databaseDisplayer)
 
     def __chooseFieldType__(self):
         self.app.startSubWindow("Create New Field", modal=True)
@@ -77,7 +63,7 @@ class DatabaseCreatorDisplay():
         self.app.addNamedCheckBox("Use for t-test", "ttest", 2, 0)
         self.app.setStretch("none")
         self.app.addButton("Cancel Field", self.__removeAddFieldWindow__, 3, 0, colspan=2)
-        self.app.addImageButton("Add", self.__addField__, self.resPath + "/add.png", 3, 2, colspan=2)
+        self.app.addButton("Add Field", self.__addField__, 3, 2, colspan=2)
         self.app.stopSubWindow()
         self.app.showSubWindow("Create New Field")
 
@@ -96,15 +82,15 @@ class DatabaseCreatorDisplay():
             print(newLimitedValues)
         ttest = self.app.getCheckBox("ttest")
         self.__removeAddFieldWindow__()
-        if field not in self.gui.databaseHandler.database.fields:
+        if field not in self.database.fields:
             self.app.startFrame("frame_"+field,
-                                row=int(1+len(self.gui.databaseHandler.database.fields)/5),
-                                column=(len(self.gui.databaseHandler.database.fields) % 5))
+                                row=int(1+len(self.database.fields)/5),
+                                column=(len(self.database.fields) % 5))
             self.app.addLabel(field, field)
             self.app.addImageButton("Remove_field_"+field,
                                     self.__addField__, self.resPath + "/delete.png")
             self.app.stopFrame()
-            self.gui.databaseHandler.database.addField(field, ttest, fieldType, limitedValues)
+            self.database.addField(field, ttest, fieldType, limitedValues)
         else:
             self.app.setStatusbar("Operation Canceled: Field already exists", field=0)
 
@@ -114,7 +100,7 @@ class DatabaseCreatorDisplay():
             self.app.removeEntry("Limited Values")
         self.app.removeEntry("Field Name")
         self.app.removeButton("Cancel Field")
-        self.app.removeButton("Add")
+        self.app.removeButton("Add Field")
         self.app.removeCheckBox("ttest")
         self.app.destroySubWindow("Create New Field")
 
@@ -124,7 +110,7 @@ class DatabaseCreatorDisplay():
         self.app.removeEntry("Group 1")
         self.app.removeEntry("Group 2")
         self.app.removeOptionBox("Add new field")
-        for field in self.gui.databaseHandler.database.fields:
+        for field in self.database.fields:
             if field != "Group":
                 self.app.removeLabel(field)
                 self.app.removeButton("Remove_field_"+field)

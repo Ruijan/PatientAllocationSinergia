@@ -9,3 +9,4 @@ patient_alloc.egg-info
 .idea
 .coverage
 venv
+.eggs

@@ -10,7 +10,8 @@ from patientalloc.src.GUI.DatabaseCreatorDisplay import DatabaseCreatorDisplay
 from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
 from patientalloc.src.GUI.SettingsDisplay import SettingsDisplay
 from patientalloc.src.GUI.GUISettings import GUISettings
-from patientalloc.src.Database.DatabaseHandler import DatabaseHandler
+from patientalloc.src.Database.DatabaseHandlerFactory import DatabaseHandlerFactory
+from patientalloc.src.GUI.GuiDatabaseHandler import GuiDatabaseHandler
 
 import os
 
@@ -19,12 +20,13 @@ class GUI():
     def __init__(self, mode):
         self.mode = mode
         self.settings = GUISettings()
-        self.databaseHandler = DatabaseHandler(self)
         if not os.path.exists(self.settings.settingsFile):
             self.settings.createSettingsFile()
         else:
             self.settings.load()
+        databaseHandler = DatabaseHandlerFactory().create(self.settings)
         self.app = gui("Patient allocation")
+        self.databaseHandler = GuiDatabaseHandler(self.app, databaseHandler)
         if self.mode == 'admin':
             self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
         elif self.mode == 'user':
@@ -71,8 +73,28 @@ class GUI():
             self.currentFrame.handleCommand("Save as")
         elif menu == "Settings":
             self.settingsDisplay.display()
+            self.databaseHandler = DatabaseHandlerFactory().create(self.settings)
         else:
             pass
+
+    def getDatabaseFolder(self):
+        if self.settings.folder == "" or self.settings.fileName == "":
+            self.__setPathToDatabase__()
+        else:
+            return self.settings.folder
+
+    def getDatabaseFilename(self):
+        if self.settings.folder == "" or self.settings.fileName == "":
+            self.__setPathToDatabase__()
+        else:
+            return self.settings.fileName
+
+    def __setPathToDatabase__(self):
+        fullpath = self.getFullpathToSaveFromUser()
+        explodedPath = fullpath.split("/")
+        self.settings.fileName = explodedPath[len(explodedPath)-1]
+        explodedPath[len(explodedPath)-1] = ""
+        self.settings.folder = "/".join(explodedPath)
 
     def getFullpathToSaveFromUser(self):
         return self.app.saveBox(title="Save database", fileName=None,

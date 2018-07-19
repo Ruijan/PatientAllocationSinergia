@@ -23,19 +23,20 @@ class DatabaseLoaderDisplay():
 
     def handleCommand(self, command):
         if command == "Save":
-            self.gui.databaseHandler.saveDatabase()
+            self.__saveDatabase__()
         elif command == "Save as":
             self.file = self.gui.getFullpathToSaveFromUser()
             self.database.createWithFullPath(self.file)
 
+    def __saveDatabase__(self):
+        self.gui.databaseHandler.saveDatabase(self.database, self.gui.getDatabaseFolder(), self.gui.getDatabaseFilename())
+
     def __tryLoadingDatabase__(self):
         try:
-            self.gui.databaseHandler.loadDatabase()
-            if self.gui.databaseHandler.isDatabaseLoaded():
-                self.database = self.gui.databaseHandler.database
+            self.database = self.gui.databaseHandler.loadDatabase(self.gui.getDatabaseFolder(), self.gui.getDatabaseFilename())
+            if self.database is not None:
                 self.loaded = True
                 self.gui.enableSaveMenu()
-                self.gui.databaseHandler.secureDatabase()
         except DatabaseError.DatabaseError as error:
             self.app.setStatusbar(error.message, field=0)
             print(error.message)
@@ -63,7 +64,7 @@ class DatabaseLoaderDisplay():
         self.app.addButton("Add Patient",self.__addSubject__)
         if self.gui.mode == 'admin':
             self.app.addButton("Check Probabilities",self.__checkProbabilityGroups__)
-        self.app.addButton("Save",self.gui.databaseHandler.saveDatabase)
+        self.app.addButton("Save",self.__saveDatabase__)
         self.app.stopFrame()
         self.app.stopFrame()
         self.databaseDisplayed = True
