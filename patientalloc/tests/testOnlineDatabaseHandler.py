@@ -73,4 +73,3 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         assert databaseMock.create.called
         assert joinPath.called
         assert removeFile.called
-

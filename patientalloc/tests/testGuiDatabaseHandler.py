@@ -5,8 +5,8 @@ import patientalloc
 from unittest.mock import MagicMock
 
 
-class testDatabaseHandler(unittest.TestCase):
-    def testDatabaseHandlerCreation(self):
+class testGuiDatabaseHandler(unittest.TestCase):
+    def testGuiDatabaseHandlerCreation(self):
         appMock = MagicMock()
         databaseHandlerMock = MagicMock()
         self.databaseHandler = patientalloc.GuiDatabaseHandler(appMock, databaseHandlerMock)

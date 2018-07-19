@@ -4,7 +4,6 @@ import unittest
 import patientalloc
 from unittest.mock import MagicMock
 from unittest.mock import patch
-import git
 
 
 class testLocalDatabaseHandler(unittest.TestCase):
@@ -27,5 +26,3 @@ class testLocalDatabaseHandler(unittest.TestCase):
         database = MagicMock()
         self.databaseHandler.saveDatabase(database, self.folder, self.file)
         assert database.create.called
-
-

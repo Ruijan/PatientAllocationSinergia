@@ -9,16 +9,16 @@ class OnlineDatabaseHandler():
         self.gitURL = gitURL
         self.gitRepo = None
 
-    def loadDatabase(self, folder, file):
-        self.__loadGitRepo__(folder, file)
-        self.file = os.path.join(folder, file)
+    def loadDatabase(self, folder, fileName):
+        self.__loadGitRepo__(folder, fileName)
+        self.fileName = os.path.join(folder, fileName)
         database = Database()
-        database.loadWithFullPath(self.file)
-        self.__secureDatabase__(folder, file)
+        database.loadWithFullPath(self.fileName)
+        self.__secureDatabase__(folder, fileName)
         return database
         #super(OnlineDatabaseHandler, self).loadDatabase()
 
-    def __loadGitRepo__(self, folder, file):
+    def __loadGitRepo__(self, folder, fileName):
         if os.path.exists(folder):
             self.gitRepo = git.Repo(folder)
             self.gitRepo.head.reset(index=True, working_tree=True)
@@ -26,16 +26,16 @@ class OnlineDatabaseHandler():
         else:
             self.gitRepo = git.Repo.clone_from(self.gitURL, folder, branch='master')
 
-    def saveDatabase(self, database, folder, file):
+    def saveDatabase(self, database, folder, fileName):
         database.folder = folder
-        database.fileName = file
-        self.__loadGitRepo__(folder, file)
+        database.fileNameName = fileName
+        self.__loadGitRepo__(folder, fileName)
         database.create()
-        self.gitRepo.index.add([os.path.join(folder, file)])
-        self.gitRepo.index.add([os.path.join(folder, file.replace('.db', '.csv'))])
+        self.gitRepo.index.add([os.path.join(folder, fileName)])
+        self.gitRepo.index.add([os.path.join(folder, fileName.replace('.db', '.csv'))])
         self.gitRepo.index.commit('Updating database')
         self.gitRepo.remotes.origin.push()
-        self.__secureDatabase__(folder, file)
+        self.__secureDatabase__(folder, fileName)
 
-    def __secureDatabase__(self, folder, file):
-        os.remove(os.path.join(folder, file.replace('.db', '.csv')))
+    def __secureDatabase__(self, folder, fileName):
+        os.remove(os.path.join(folder, fileName.replace('.db', '.csv')))

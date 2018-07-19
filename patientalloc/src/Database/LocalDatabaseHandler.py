@@ -7,12 +7,12 @@ class LocalDatabaseHandler():
     def __init__(self):
         self.database = None
 
-    def loadDatabase(self, folder, file):
+    def loadDatabase(self, folder, fileName):
         database = Database()
-        database.loadWithFullPath(os.path.join(folder, file))
+        database.loadWithFullPath(os.path.join(folder, fileName))
         return database
 
-    def saveDatabase(self, database, folder, file):
+    def saveDatabase(self, database, folder, fileName):
         database.folder = folder
-        database.fileName = file
+        database.fileNameName = fileName
         database.create()
