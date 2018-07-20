@@ -21,14 +21,14 @@ class testGuiDatabaseHandler(unittest.TestCase):
         self.appMock.setStatusbar = MagicMock()
         self.databaseHandlerMock.loadDatabase = MagicMock()
         self.databaseHandler.loadDatabase('testFolder', 'testFilename')
-        assert self.appMock.setStatusbar.called
-        assert self.appMock.setStatusbar.call_count is 2
-        assert self.databaseHandlerMock.loadDatabase.called
+        self.assertTrue(self.appMock.setStatusbar.called)
+        self.assertEqual(self.appMock.setStatusbar.call_count, 2)
+        self.assertTrue(self.databaseHandlerMock.loadDatabase.called)
 
     def testSaveDatabase(self):
         self.appMock.setStatusbar = MagicMock()
         self.databaseHandlerMock.saveDatabase = MagicMock()
         self.databaseHandler.saveDatabase(None, 'testFolder', 'testFilename')
-        assert self.appMock.setStatusbar.called
-        assert self.appMock.setStatusbar.call_count is 2
-        assert self.databaseHandlerMock.saveDatabase.called
+        self.assertTrue(self.appMock.setStatusbar.called)
+        self.assertEqual(self.appMock.setStatusbar.call_count, 2)
+        self.assertTrue(self.databaseHandlerMock.saveDatabase.called)

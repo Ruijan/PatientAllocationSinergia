@@ -9,11 +9,11 @@ class testDatabaseHandlerFactory(unittest.TestCase):
         settings = MagicMock()
         settings.saveMode = "local"
         database = patientalloc.DatabaseHandlerFactory.create(settings)
-        assert isinstance(database, patientalloc.LocalDatabaseHandler)
+        self.assertTrue(isinstance(database, patientalloc.LocalDatabaseHandler))
 
     def testCreateOnlineDatabaseHandler(self):
         settings = MagicMock()
         settings.saveMode = "online"
         settings.server = "testGitServer"
         database = patientalloc.DatabaseHandlerFactory.create(settings)
-        assert isinstance(database, patientalloc.OnlineDatabaseHandler)
+        self.assertTrue(isinstance(database, patientalloc.OnlineDatabaseHandler))

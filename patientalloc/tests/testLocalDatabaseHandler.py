@@ -20,9 +20,9 @@ class testLocalDatabaseHandler(unittest.TestCase):
     def testLoadDatabseOnExistingDirectory(self, DatabaseMock):
         DatabaseMock.loadWithFullPath.return_value = None
         self.databaseHandler.loadDatabase(self.folder, self.file)
-        assert DatabaseMock.called
+        self.assertTrue(DatabaseMock.called)
 
     def testSavingDatabseOnExistingDirectory(self):
         database = MagicMock()
         self.databaseHandler.saveDatabase(database, self.folder, self.file)
-        assert database.create.called
+        self.assertTrue(database.create.called)

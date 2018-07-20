@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from appJar import appjar
-from pathlib import Path
-from patientalloc.src.Database.Database import Database
 import patientalloc.src.Database.DatabaseError as DatabaseError
-from patientalloc.src.GUI.WelcomeDisplay import WelcomeDisplay
-import os
 
 
 class DatabaseLoaderDisplay():

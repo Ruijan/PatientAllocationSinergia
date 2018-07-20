@@ -30,8 +30,8 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         existsPaths.assert_called_with(self.folder)
         cloneRepo.assert_called_with(self.gitURL, self.folder, branch='master')
         databaseCreator.assert_called_with(self.databaseHandler.fileName)
-        assert joinPath.called
-        assert removeFile.called
+        self.assertTrue(joinPath.called)
+        self.assertTrue(removeFile.called)
 
     @patch('os.remove')
     @patch('os.path.join')
@@ -44,11 +44,11 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         self.databaseHandler.loadDatabase(self.folder, self.file)
         existsPaths.assert_called_with(self.folder)
         repository.assert_called_with(self.folder)
-        assert repository.return_value.remotes.origin.pull.called
+        self.assertTrue(repository.return_value.remotes.origin.pull.called)
         repository.return_value.head.reset.assert_called_with(index=True, working_tree=True)
         databaseCreator.assert_called_with(self.databaseHandler.fileName)
-        assert joinPath.called
-        assert removeFile.called
+        self.assertTrue(joinPath.called)
+        self.assertTrue(removeFile.called)
 
     @patch('os.path.exists', return_value=False)
     def testGitURLDoesNotExistShouldThrow(self, existsPaths):
@@ -67,9 +67,9 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         self.databaseHandler.saveDatabase(databaseMock, self.folder, self.file)
         existsPaths.assert_called_with(self.folder)
         cloneRepo.assert_called_with(self.gitURL, self.folder, branch='master')
-        assert cloneRepo.return_value.index.add.called
-        assert cloneRepo.return_value.index.commit.called
-        assert cloneRepo.return_value.remotes.origin.push.called
-        assert databaseMock.create.called
-        assert joinPath.called
-        assert removeFile.called
+        self.assertTrue(cloneRepo.return_value.index.add.called)
+        self.assertTrue(cloneRepo.return_value.index.commit.called)
+        self.assertTrue(cloneRepo.return_value.remotes.origin.push.called)
+        self.assertTrue(databaseMock.create.called)
+        self.assertTrue(joinPath.called)
+        self.assertTrue(removeFile.called)
