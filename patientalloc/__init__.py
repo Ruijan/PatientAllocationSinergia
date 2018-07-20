@@ -8,6 +8,7 @@ from patientalloc.src.GUI.GUISettings import GUISettings
 from patientalloc.src.Database.OnlineDatabaseHandler import OnlineDatabaseHandler
 from patientalloc.src.Database.LocalDatabaseHandler import LocalDatabaseHandler
 from patientalloc.src.GUI.GuiDatabaseHandler import GuiDatabaseHandler
+from patientalloc.src.Database.DatabaseHandlerFactory import DatabaseHandlerFactory
 
 import argparse
 

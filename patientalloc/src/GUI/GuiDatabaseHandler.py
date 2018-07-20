@@ -11,5 +11,5 @@ class GuiDatabaseHandler():
 
     def saveDatabase(self, database, folder, fileName):
         self.app.setStatusbar("Saving database...", field=0)
-        self.databaseHandler.loadDatabase(database, folder, fileName)
+        self.databaseHandler.saveDatabase(database, folder, fileName)
         self.app.setStatusbar("Database saved", field=0)

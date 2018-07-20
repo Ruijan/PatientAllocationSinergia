@@ -29,7 +29,7 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         self.databaseHandler.loadDatabase(self.folder, self.file)
         existsPaths.assert_called_with(self.folder)
         cloneRepo.assert_called_with(self.gitURL, self.folder, branch='master')
-        databaseCreator.assert_called_with(self.databaseHandler.file)
+        databaseCreator.assert_called_with(self.databaseHandler.fileName)
         assert joinPath.called
         assert removeFile.called
 
@@ -46,7 +46,7 @@ class testOnlineDatabaseHandler(unittest.TestCase):
         repository.assert_called_with(self.folder)
         assert repository.return_value.remotes.origin.pull.called
         repository.return_value.head.reset.assert_called_with(index=True, working_tree=True)
-        databaseCreator.assert_called_with(self.databaseHandler.file)
+        databaseCreator.assert_called_with(self.databaseHandler.fileName)
         assert joinPath.called
         assert removeFile.called
 
