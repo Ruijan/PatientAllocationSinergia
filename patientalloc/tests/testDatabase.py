@@ -9,6 +9,7 @@ Created on Mon Jun 18 18:28:32 2018
 import unittest
 import patientalloc
 import os.path
+import random
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
@@ -22,6 +23,12 @@ class TestDatabase(unittest.TestCase):
         self.groups = ["BCI", "Sham"]
         self.fieldTypes = ["Entry", "Number", "Hidden"]
         self.created = False
+        self.possibleEntries = []
+        self.possibleEntries.append({'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}); 
+        self.possibleEntries.append({'SubjectId': 's02', 'Age': '30', 'Group': 'BCI'}); 
+        self.possibleEntries.append({'SubjectId': 's03', 'Age': '40', 'Group': 'BCI'}); 
+        self.possibleEntries.append({'SubjectId': 's04', 'Age': '30'}); 
+
 
     def testCreateDatabase(self):
         self.database.create()
@@ -146,32 +153,23 @@ class TestDatabase(unittest.TestCase):
     def testAddEntryToOneLineDatabase(self):
         self.database.addFields(self.fields, self.ttest, self.fieldTypes)
         self.database.groups = self.groups.copy()
-        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's02', 'Age': '45'}
-        self.__checkGroupDistribution__(newEntry, 0.5)
+        self.database.addEntryWithGroup(self.possibleEntries[0])
+        self.__checkGroupDistribution__(self.possibleEntries[1], 0.5)
 
     def testAddEntryToTwoLinesDatabase(self):
         self.database.addFields(self.fields, self.ttest, self.fieldTypes)
         self.database.groups = self.groups.copy()
-        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's02', 'Age': '30', 'Group': 'BCI'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's03', 'Age': '50'}
-        self.__checkGroupDistribution__(newEntry, 0.5)
+        self.database.addEntryWithGroup(self.possibleEntries[0])
+        self.database.addEntryWithGroup(self.possibleEntries[1])
+        self.__checkGroupDistribution__(self.possibleEntries[3], 0.5)
 
     def testAddEntryToThreeLinesDatabase(self):
         self.database.addFields(self.fields, self.ttest, self.fieldTypes)
         self.database.groups = self.groups.copy()
-        newEntry = {'SubjectId': 's01', 'Age': '65', 'Group': 'Sham'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's02', 'Age': '30', 'Group': 'BCI'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's02', 'Age': '40', 'Group': 'BCI'}
-        self.database.addEntryWithGroup(newEntry)
-        newEntry = {'SubjectId': 's03', 'Age': '30'}
-        self.__checkGroupDistribution__(newEntry, 0.81)
+        self.database.addEntryWithGroup(self.possibleEntries[0])
+        self.database.addEntryWithGroup(self.possibleEntries[1])
+        self.database.addEntryWithGroup(self.possibleEntries[2])
+        self.__checkGroupDistribution__(self.possibleEntries[3], 0.81)
 
     def __checkCorrectDBInfo__(self):
         fieldIndex = 0
@@ -194,3 +192,31 @@ class TestDatabase(unittest.TestCase):
     def tearDown(self):
         if self.created:
             self.database.destroy()
+
+    def testAddRejectedEntry(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        self.database.addEntryWithGroup(self.possibleEntries[0])
+        self.database.addEntryWithGroup(self.possibleEntries[1])
+        self.database.addEntryWithGroup(self.possibleEntries[2])
+        self.database.addEntryWithGroup(self.possibleEntries[3])
+        self.database.rejectEntry(2)
+        self.assertEqual(self.database.rejectedEntries[0], 2)
+        self.assertEqual(self.database.entries[self.database.rejectedEntries[0]], self.possibleEntries[2])
+
+    def testAddRjectedEntryShouldNoComputePValue(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        for x in range(20):
+            entry = {'SubjectId': 's0' + str(x), 'Age': str(random.randint(20,90)), 'Group': self.groups[random.randint(0,1)]}
+            self.database.addEntryWithGroup(entry)
+        self.database.addEntryWithGroup(self.possibleEntries[0])
+        self.database.addEntryWithGroup(self.possibleEntries[1])
+        originalPValue = self.database.getPValue("Age")
+        rejectedEntry = len(self.database.entries)
+        self.database.addEntryWithGroup(self.possibleEntries[2])
+        previousPValue = self.database.getPValue("Age")
+        self.database.rejectEntry(rejectedEntry)
+        currentPValue = self.database.getPValue("Age")
+        self.assertEqual(currentPValue, originalPValue)
+        self.assertTrue(currentPValue != previousPValue)

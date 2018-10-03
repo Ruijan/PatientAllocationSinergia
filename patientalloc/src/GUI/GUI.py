@@ -14,6 +14,7 @@ from patientalloc.src.Database.DatabaseHandlerFactory import DatabaseHandlerFact
 from patientalloc.src.GUI.GuiDatabaseHandler import GuiDatabaseHandler
 
 import os
+import time
 
 
 class GUI():
@@ -26,19 +27,29 @@ class GUI():
             self.settings.load()
         databaseHandler = DatabaseHandlerFactory().create(self.settings)
         self.app = gui("Patient allocation")
-        self.databaseHandler = GuiDatabaseHandler(self.app, databaseHandler)
-        if self.mode == 'admin':
-            self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
-        elif self.mode == 'user':
-            self.fileMenus = ["Load", "Save", "-", "Close"]
-        self.app.addMenuList("File", self.fileMenus, self.__menuPress__)
-
-        self.currentFrame = WelcomeDisplay(self.app, self)
-        self.currentFrame.display()
         self.app.addStatusbar(fields=1, side="LEFT")
         self.app.setStatusbarWidth(120, 0)
         self.app.setStretch("COLUMN")
         self.settingsDisplay = SettingsDisplay(self.app, self.settings)
+        self.databaseHandler = GuiDatabaseHandler(self.app, databaseHandler)
+        if self.isAdminMode():
+            self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
+        elif self.isUserMode():
+            self.fileMenus = ["Load", "Save", "-", "Close"]
+        self.app.addMenuList("File", self.fileMenus, self.__menuPress__)
+
+        if self.isAdminMode():
+            self.currentFrame = WelcomeDisplay(self.app, self)
+            self.currentFrame.display()
+        elif self.isUserMode():
+            self.currentFrame = DatabaseLoaderDisplay(self);
+            self.currentFrame.display()
+
+    def isAdminMode(self):
+        return self.mode == 'admin'
+
+    def isUserMode(self):
+        return self.mode == 'user'
 
     def start(self):
         self.app.go()

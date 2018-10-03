@@ -19,6 +19,7 @@ class Database:
         self.groups = []
         self.order = []
         self.limitedValues = []
+        self.rejectedEntries = []
         random.seed(datetime.now())
 
     def createCopy(self):
@@ -50,7 +51,8 @@ class Database:
             document = {'databaseFile': self.fileName.replace('db', 'csv'),
                         'order': self.order,
                         'fields': dict(),
-                        'groups': self.groups}
+                        'groups': self.groups,
+                        'rejectedEntries': self.rejectedEntries}
             for field in self.fields:
                 document['fields'][field] = dict()
                 document['fields'][field]['ttest'] = self.getTtestFromField(field)
@@ -84,6 +86,8 @@ class Database:
                 self.ttest.append(dbInfo["fields"][field]["ttest"])
                 self.fieldTypes.append(dbInfo["fields"][field]["type"])
                 self.limitedValues.append(dbInfo["fields"][field]["limitedValues"])
+            if "rejectedEntries" in dbInfo:
+                self.rejectedEntries = dbInfo["rejectedEntries"]
             self.groups = dbInfo['groups']
             self.order = dbInfo['order']
             fullpath = self.folder + "/" + dbInfo["databaseFile"]
@@ -150,11 +154,14 @@ class Database:
             raise DatabaseError.CannotComputeTTestOnField(field)
         groups = ({self.groups[0] : [], self.groups[1] : []})
         pvalue = 0
+        entryNumber = 0
         for entry in self.entries:
-            if self.getFieldTypeFromField(field) == "List":
-                groups[entry["Group"]].append(self.getLimitedValuesFromField(field).index(entry[field]))
-            elif self.getFieldTypeFromField(field) == "Number":
-                groups[entry["Group"]].append(int(float(entry[field])))
+            if entryNumber+1 not in self.rejectedEntries:
+                if self.getFieldTypeFromField(field) == "List":
+                    groups[entry["Group"]].append(self.getLimitedValuesFromField(field).index(entry[field]))
+                elif self.getFieldTypeFromField(field) == "Number":
+                    groups[entry["Group"]].append(int(float(entry[field])))
+            entryNumber = entryNumber + 1
         if self.getFieldTypeFromField(field) == "List":
             obs = [groups[self.groups[0]].count(0), groups[self.groups[0]].count(1)]
             obs2 = [groups[self.groups[1]].count(0), groups[self.groups[1]].count(1)]
@@ -207,3 +214,10 @@ class Database:
         if proba < probas[self.groups[0]]:
             return self.groups[0]
         return self.groups[1]
+
+
+    def rejectEntry(self, index):
+        self.rejectedEntries.append(index)
+
+    def unrejectEntry(self, index):
+        self.rejectedEntries.remove(index)
