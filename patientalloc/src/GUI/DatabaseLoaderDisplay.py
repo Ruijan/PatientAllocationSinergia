@@ -190,6 +190,11 @@ class DatabaseLoaderDisplay():
             for box in self.optionBoxToRemove:
                 self.app.removeOptionBox(box);
             self.app.removeFrame("DatabaseDisplay")
+            del self.labelsToRemove[:]
+            del self.entriesToRemove[:]
+            del self.checkboxesToRemove[:]
+            del self.buttonsToRemove[:]
+            del self.optionBoxToRemove[:]
 
     def __removeFieldColumn__(self, field):
         if self.gui.mode == 'admin' or field != 'Group':
@@ -239,9 +244,9 @@ class DatabaseLoaderDisplay():
         root.find('recording').find('date').text = str(now.day)+str(now.month)+str(now.year)
         fid = random.randint(0, len(database.entries)-1)
         while fid in database.rejectedEntries:
-            fid = random.randint(0, len(database.entries))
+            fid = random.randint(0, len(database.entries)-1)
         root.find('protocol').find('mi').find('fid').text = str(database.entries[fid]["SubjectID"])
-        print(group)
+        
         if group == "Sham":
             root.find('classifiers').find('mi').find('ndf').find('exec').text = "ndf_mi_.m"
         else:
