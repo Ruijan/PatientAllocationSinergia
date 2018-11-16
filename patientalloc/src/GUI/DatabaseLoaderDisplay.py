@@ -248,9 +248,9 @@ class DatabaseLoaderDisplay():
         root.find('protocol').find('mi').find('fid').text = str(database.entries[fid]["SubjectID"])
         
         if group == "Sham":
-            root.find('classifiers').find('mi').find('ndf').find('exec').text = "ndf_mi_.m"
+            root.find('classifiers').find('mi').find('ndf').find('exec').text = "ndf_mi_"
         else:
-            root.find('classifiers').find('mi').find('ndf').find('exec').text = "ndf_mi.m"
+            root.find('classifiers').find('mi').find('ndf').find('exec').text = "ndf_mi"
         tree.write(xmlFile)
         return xmlFile
 
