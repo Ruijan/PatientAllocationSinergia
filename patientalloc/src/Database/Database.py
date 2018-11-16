@@ -171,6 +171,18 @@ class Database:
         return pvalue
 
     def getGroupsProbabilitiesFromNewEntry(self, newEntry):
+        groupCounter = {self.groups[0] : 0, self.groups[1] : 1}
+        for entry in self.entries:
+            for group in self.groups:
+                if entry['Group'] == group:
+                    groupCounter[group] = groupCounter[group] + 1
+        if abs(groupCounter[self.groups[0]] - groupCounter[self.groups[1]]) >= 4:
+
+            if groupCounter[self.groups[0]] - groupCounter[self.groups[1]] >= 0:
+                probas = {self.groups[0] : 0, self.groups[1]: 1}
+            else:
+                probas = {self.groups[0] : 0, self.groups[1]: 1}
+            return probas
         pvalues = dict()
         productsPValues = dict()
         for group in self.groups:

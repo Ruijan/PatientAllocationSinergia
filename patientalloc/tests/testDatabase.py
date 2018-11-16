@@ -189,9 +189,7 @@ class TestDatabase(unittest.TestCase):
         proba = countGroup[self.groups[0]]/(countGroup[self.groups[1]] + countGroup[self.groups[1]])
         self.assertTrue(abs(proba - expectedFirstGroupProbability) <= 0.15)
 
-    def tearDown(self):
-        if self.created:
-            self.database.destroy()
+    
 
     def testAddRejectedEntry(self):
         self.database.addFields(self.fields, self.ttest, self.fieldTypes)
@@ -213,10 +211,28 @@ class TestDatabase(unittest.TestCase):
         self.database.addEntryWithGroup(self.possibleEntries[0])
         self.database.addEntryWithGroup(self.possibleEntries[1])
         originalPValue = self.database.getPValue("Age")
-        rejectedEntry = len(self.database.entries)
         self.database.addEntryWithGroup(self.possibleEntries[2])
+        rejectedEntry = len(self.database.entries)
         previousPValue = self.database.getPValue("Age")
         self.database.rejectEntry(rejectedEntry)
         currentPValue = self.database.getPValue("Age")
+        print(currentPValue)
+        print(originalPValue)
+        print(previousPValue)
         self.assertEqual(currentPValue, originalPValue)
         self.assertTrue(currentPValue != previousPValue)
+
+    def testAddSubjectWhereMaxDifferenceIsReached(self):
+        self.database.addFields(self.fields, self.ttest, self.fieldTypes)
+        self.database.groups = self.groups.copy()
+        for x in range(0,5):
+            entry = {'SubjectId': 's' + str(x), 'Age': str(random.randint(20,90)), 'Group': self.groups[0]}
+            self.database.addEntryWithGroup(entry)
+        entry = {'SubjectId': 's' + str(5), 'Age': str(random.randint(20,90)), 'Group': self.groups[0]}
+        expectedPValues = self.database.getGroupsProbabilitiesFromNewEntry(entry)
+        self.assertEqual(expectedPValues[self.groups[1]], 1)
+        self.assertEqual(expectedPValues[self.groups[0]], 0)
+
+    def tearDown(self):
+        if self.created:
+            self.database.destroy()
