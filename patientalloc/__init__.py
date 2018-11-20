@@ -3,6 +3,8 @@
 import sys
 from patientalloc.src.GUI.GUI import GUI
 from patientalloc.src.Database.Database import Database
+from patientalloc.src.Database.Subject import Subject
+from patientalloc.src.Database.BCISubject import BCISubject
 import patientalloc.src.Database.DatabaseError as DatabaseError
 from patientalloc.src.GUI.GUISettings import GUISettings
 from patientalloc.src.Database.OnlineDatabaseHandler import OnlineDatabaseHandler

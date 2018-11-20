@@ -177,7 +177,6 @@ class Database:
                 if entry['Group'] == group:
                     groupCounter[group] = groupCounter[group] + 1
         if abs(groupCounter[self.groups[0]] - groupCounter[self.groups[1]]) >= 4:
-
             if groupCounter[self.groups[0]] - groupCounter[self.groups[1]] >= 0:
                 probas = {self.groups[0] : 0, self.groups[1]: 1}
             else:

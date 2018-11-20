@@ -243,7 +243,7 @@ class DatabaseLoaderDisplay():
         root.find('subject').find('age').text = str(age)
         root.find('recording').find('date').text = str(now.day)+str(now.month)+str(now.year)
         fid = random.randint(0, len(database.entries)-1)
-        while fid in database.rejectedEntries:
+        while fid in database.rejectedEntries and database.entries[fid]["Group"] == "BCI":
             fid = random.randint(0, len(database.entries)-1)
         root.find('protocol').find('mi').find('fid').text = str(database.entries[fid]["SubjectID"])
         
