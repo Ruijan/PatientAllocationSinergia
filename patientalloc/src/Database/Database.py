@@ -198,7 +198,7 @@ class Database:
             if groupCounter[self.groups[0]] - groupCounter[self.groups[1]] >= 0:
                 probas = {self.groups[0]: 0, self.groups[1]: 1}
             else:
-                probas = {self.groups[0]: 0, self.groups[1]: 1}
+                probas = {self.groups[0]: 1, self.groups[1]: 0}
             return probas
         pvalues = dict()
         productsPValues = dict()

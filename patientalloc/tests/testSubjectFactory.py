@@ -5,7 +5,7 @@ from unittest.mock import patch
 from unittest.mock import PropertyMock
 
 
-class testSubjectFactory(unittest.TestCase):
+class TestSubjectFactory(unittest.TestCase):
     def setUp(self):
         self.properties = {'Group': 'Sham'}
         self.database = patientalloc.Database()

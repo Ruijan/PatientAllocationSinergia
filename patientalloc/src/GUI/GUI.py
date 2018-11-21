@@ -33,7 +33,8 @@ class GUI():
         self.settingsDisplay = SettingsDisplay(self.app, self.settings)
         self.databaseHandler = GuiDatabaseHandler(self.app, databaseHandler)
         if self.isAdminMode():
-            self.fileMenus = ["Load", "Save", "Save as", "Create", "-", "Settings", "-", "Close"]
+            self.fileMenus = ["Load", "Save", "Save as",
+                              "Create", "-", "Settings", "-", "Close"]
         elif self.isUserMode():
             self.fileMenus = ["Load", "Save", "-", "Close"]
         self.app.addMenuList("File", self.fileMenus, self.__menuPress__)
@@ -42,7 +43,7 @@ class GUI():
             self.currentFrame = WelcomeDisplay(self.app, self)
             self.currentFrame.display()
         elif self.isUserMode():
-            self.currentFrame = DatabaseLoaderDisplay(self);
+            self.currentFrame = DatabaseLoaderDisplay(self)
             self.currentFrame.display()
 
     def isAdminMode(self):
@@ -85,8 +86,6 @@ class GUI():
         elif menu == "Settings":
             self.settingsDisplay.display()
             self.databaseHandler = DatabaseHandlerFactory().create(self.settings)
-        else:
-            pass
 
     def getDatabaseFolder(self):
         if self.settings.folder == "" or self.settings.fileName == "":
@@ -103,12 +102,12 @@ class GUI():
     def __setPathToDatabase__(self):
         fullpath = self.getFullpathToSaveFromUser()
         explodedPath = fullpath.split("/")
-        self.settings.fileName = explodedPath[len(explodedPath)-1]
-        explodedPath[len(explodedPath)-1] = ""
+        self.settings.fileName = explodedPath[len(explodedPath) - 1]
+        explodedPath[len(explodedPath) - 1] = ""
         self.settings.folder = "/".join(explodedPath)
 
     def getFullpathToSaveFromUser(self):
         return self.app.saveBox(title="Save database", fileName=None,
-                                  dirName=None, fileExt=".db",
-                                  fileTypes=[('Database', '*.db')],
-                                  asFile=None, parent=None)
+                                dirName=None, fileExt=".db",
+                                fileTypes=[('Database', '*.db')],
+                                asFile=None, parent=None)

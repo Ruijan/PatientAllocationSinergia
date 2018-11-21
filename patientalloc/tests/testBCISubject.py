@@ -10,13 +10,15 @@ import datetime
 import json
 
 
-class testBCISubject(unittest.TestCase):
+class TestBCISubject(unittest.TestCase):
 
     def setUp(self):
         self.properties = {"SubjectID": 'testSubject',
                            "Age": '50', "Group": 'Sham'}
         self.matchingSubjectId = "s03"
-        xmlFilePath = str(Path.home()) + "/.cnbitk/cnbimi/xml/"
+        # xmlFilePath = str(Path.home()) + "/.cnbitk/cnbimi/xml/"
+        xmlFilePath, _ = os.path.split(os.path.abspath(__file__))
+        xmlFilePath = xmlFilePath + "/database/"
         xmlFileName = "mi_stroke_prot.xml"
         self.savingProperties = {"folder": str(Path.home()) + "/data/test",
                                  "xmlFilePath": xmlFilePath, "xmlFileName": xmlFileName}
@@ -26,22 +28,22 @@ class testBCISubject(unittest.TestCase):
         self.subject = patientalloc.BCISubject(
             self.properties, self.savingProperties, self.matchingSubjectId)
 
-    def testCreation(self):
+    def test_creation(self):
         self.assertEqual(self.subject.properties, self.properties)
         self.assertEqual(self.subject.savingProperties, self.savingProperties)
         self.assertEqual(self.subject.matchingSubjectId,
                          self.matchingSubjectId)
 
-    def testXMLUpdateWithShamGroup(self):
+    def test_XML_update_with_sham_group(self):
         self.subject.createDataFolder()
         self.subject.updateXML()
 
         tree = ET.parse(self.savingProperties["folder"] + "/" +
                         self.properties["SubjectID"] + "/" + self.savingProperties["xmlFileName"])
         root = tree.getroot()
-        self.__checkXMLValues__(root)
+        self.__check_XML_Values__(root)
 
-    def __checkXMLValues__(self, root):
+    def __check_XML_Values__(self, root):
         now = datetime.datetime.now()
         self.assertEqual(root.find('subject').find(
             'id').text, self.properties["SubjectID"])
@@ -54,7 +56,7 @@ class testBCISubject(unittest.TestCase):
         self.assertEqual(root.find('classifiers').find(
             'mi').find('ndf').find('exec').text, 'ndf_mi_')
 
-    def testCreateDataFolder(self):
+    def test_create_data_folder(self):
         self.subject.createDataFolder()
         self.assertTrue(os.path.isdir(self.dataPath))
         self.assertTrue(os.path.isdir(self.subjectPath))
