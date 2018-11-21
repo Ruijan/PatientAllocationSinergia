@@ -7,7 +7,8 @@ python:
 
 addons:
   sonarcloud:
-    organization: Ruijan_PatientAllocationSinergia # the key of the org you chose at step #3
+    organization: ruijan-github
+    projectKey: Ruijan_PatientAllocationSinergia # the key of the org you chose at step #3
     token:
       secure: 86ae8551491123a46722be5a5bfd400ff020badd # encrypted value of your token
 
