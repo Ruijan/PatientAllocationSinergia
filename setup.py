@@ -8,7 +8,7 @@ setup(name='patient-alloc',
       author='Julien Rechenmann',
       author_email='julien.rechenmann@epfl.ch',
       license='MIT',
-      packages=['patientalloc', 'patientalloc.src.Database', 'patientalloc.src.GUI'],
+      packages=['patientalloc', 'patientalloc.src.Database', 'patientalloc.src.Database.Subject', 'patientalloc.src.GUI'],
       install_requires=[
           'pyyaml',
           'scipy',

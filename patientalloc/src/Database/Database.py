@@ -8,6 +8,7 @@ import math
 import random
 from datetime import datetime
 
+
 class Database:
     def __init__(self):
         self.fileName = ""
@@ -39,7 +40,6 @@ class Database:
         fullpath = self.folder + "/" + self.fileName
         self.createWithFullPath(fullpath)
 
-
     def createWithFullPath(self, fullpath):
         self.__setFileAndPathFromFullpath__(fullpath)
         if(not os.path.isdir(self.folder)):
@@ -55,9 +55,12 @@ class Database:
                         'rejectedEntries': self.rejectedEntries}
             for field in self.fields:
                 document['fields'][field] = dict()
-                document['fields'][field]['ttest'] = self.getTtestFromField(field)
-                document['fields'][field]['type'] = self.getFieldTypeFromField(field)
-                document['fields'][field]['limitedValues'] = self.getLimitedValuesFromField(field)
+                document['fields'][field]['ttest'] = self.getTtestFromField(
+                    field)
+                document['fields'][field]['type'] = self.getFieldTypeFromField(
+                    field)
+                document['fields'][field]['limitedValues'] = self.getLimitedValuesFromField(
+                    field)
             yaml.dump(document, dbInfoFile)
         fullpath = self.folder + "/" + self.fileName.replace('db', 'csv')
         with open(fullpath, 'w') as csvfile:
@@ -68,8 +71,8 @@ class Database:
 
     def __setFileAndPathFromFullpath__(self, fullpath):
         explodedPath = fullpath.split("/")
-        self.fileName = explodedPath[len(explodedPath)-1]
-        explodedPath[len(explodedPath)-1] = ""
+        self.fileName = explodedPath[len(explodedPath) - 1]
+        explodedPath[len(explodedPath) - 1] = ""
         self.folder = "/".join(explodedPath)
 
     def __checkWritingPath__(self, fullpath):
@@ -85,7 +88,8 @@ class Database:
                 self.fields.append(field)
                 self.ttest.append(dbInfo["fields"][field]["ttest"])
                 self.fieldTypes.append(dbInfo["fields"][field]["type"])
-                self.limitedValues.append(dbInfo["fields"][field]["limitedValues"])
+                self.limitedValues.append(
+                    dbInfo["fields"][field]["limitedValues"])
             if "rejectedEntries" in dbInfo:
                 self.rejectedEntries = dbInfo["rejectedEntries"]
             self.groups = dbInfo['groups']
@@ -99,6 +103,16 @@ class Database:
     def load(self):
         fullpath = self.folder + "/" + self.fileName
         self.loadWithFullPath(fullpath)
+
+    def getEntryGroup(self, index):
+        if index > len(self.entries):
+            raise DatabaseError.EntryOutOfRange(index)
+        return self.entries[index]["Group"]
+
+    def getEntryId(self, index):
+        if index > len(self.entries):
+            raise DatabaseError.EntryOutOfRange(index)
+        return self.entries[index]["SubjectID"]
 
     def getTtestFromField(self, field):
         return self.ttest[self.fields.index(field)]
@@ -152,35 +166,39 @@ class Database:
         indexField = self.fields.index(field)
         if self.ttest[indexField] is 0:
             raise DatabaseError.CannotComputeTTestOnField(field)
-        groups = ({self.groups[0] : [], self.groups[1] : []})
+        groups = ({self.groups[0]: [], self.groups[1]: []})
         pvalue = 0
         entryNumber = 0
         for entry in self.entries:
-            if entryNumber+1 not in self.rejectedEntries:
+            if entryNumber + 1 not in self.rejectedEntries:
                 if self.getFieldTypeFromField(field) == "List":
-                    groups[entry["Group"]].append(self.getLimitedValuesFromField(field).index(entry[field]))
+                    groups[entry["Group"]].append(
+                        self.getLimitedValuesFromField(field).index(entry[field]))
                 elif self.getFieldTypeFromField(field) == "Number":
                     groups[entry["Group"]].append(int(float(entry[field])))
             entryNumber = entryNumber + 1
         if self.getFieldTypeFromField(field) == "List":
-            obs = [groups[self.groups[0]].count(0), groups[self.groups[0]].count(1)]
-            obs2 = [groups[self.groups[1]].count(0), groups[self.groups[1]].count(1)]
+            obs = [groups[self.groups[0]].count(
+                0), groups[self.groups[0]].count(1)]
+            obs2 = [groups[self.groups[1]].count(
+                0), groups[self.groups[1]].count(1)]
             _, pvalue = stats.chisquare(obs, obs2)
         elif self.getFieldTypeFromField(field) == "Number":
-            _, pvalue = stats.ttest_ind(groups[self.groups[0]],groups[self.groups[1]], equal_var = False)
+            _, pvalue = stats.ttest_ind(
+                groups[self.groups[0]], groups[self.groups[1]], equal_var=False)
         return pvalue
 
     def getGroupsProbabilitiesFromNewEntry(self, newEntry):
-        groupCounter = {self.groups[0] : 0, self.groups[1] : 1}
+        groupCounter = {self.groups[0]: 0, self.groups[1]: 1}
         for entry in self.entries:
             for group in self.groups:
                 if entry['Group'] == group:
                     groupCounter[group] = groupCounter[group] + 1
         if abs(groupCounter[self.groups[0]] - groupCounter[self.groups[1]]) >= 4:
             if groupCounter[self.groups[0]] - groupCounter[self.groups[1]] >= 0:
-                probas = {self.groups[0] : 0, self.groups[1]: 1}
+                probas = {self.groups[0]: 0, self.groups[1]: 1}
             else:
-                probas = {self.groups[0] : 0, self.groups[1]: 1}
+                probas = {self.groups[0]: 0, self.groups[1]: 1}
             return probas
         pvalues = dict()
         productsPValues = dict()
@@ -209,14 +227,14 @@ class Database:
             probas[self.groups[1]] = 0.5
         elif pvalues[self.groups[0]] == pvalues[self.groups[1]]:
             probas[self.groups[0]] = productsPValues[self.groups[0]] / (productsPValues[self.groups[0]] +
-                                          productsPValues[self.groups[1]])
+                                                                        productsPValues[self.groups[1]])
             probas[self.groups[1]] = productsPValues[self.groups[1]] / (productsPValues[self.groups[0]] +
-                                          productsPValues[self.groups[1]])
+                                                                        productsPValues[self.groups[1]])
         else:
             probas[self.groups[0]] = pvalues[self.groups[0]] / (pvalues[self.groups[0]] +
-                                          pvalues[self.groups[1]])
+                                                                pvalues[self.groups[1]])
             probas[self.groups[1]] = pvalues[self.groups[1]] / (pvalues[self.groups[0]] +
-                                          pvalues[self.groups[1]])
+                                                                pvalues[self.groups[1]])
         return probas
 
     def getGroupFromNewEntry(self, newEntry):
@@ -225,7 +243,6 @@ class Database:
         if proba < probas[self.groups[0]]:
             return self.groups[0]
         return self.groups[1]
-
 
     def rejectEntry(self, index):
         self.rejectedEntries.append(index)

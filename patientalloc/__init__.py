@@ -3,8 +3,9 @@
 import sys
 from patientalloc.src.GUI.GUI import GUI
 from patientalloc.src.Database.Database import Database
-from patientalloc.src.Database.Subject import Subject
-from patientalloc.src.Database.BCISubject import BCISubject
+from patientalloc.src.Database.Subject.Subject import Subject
+from patientalloc.src.Database.Subject.BCISubject import BCISubject
+from patientalloc.src.Database.Subject.SubjectFactory import SubjectFactory
 import patientalloc.src.Database.DatabaseError as DatabaseError
 from patientalloc.src.GUI.GUISettings import GUISettings
 from patientalloc.src.Database.OnlineDatabaseHandler import OnlineDatabaseHandler
@@ -13,6 +14,7 @@ from patientalloc.src.GUI.GuiDatabaseHandler import GuiDatabaseHandler
 from patientalloc.src.Database.DatabaseHandlerFactory import DatabaseHandlerFactory
 
 import argparse
+
 
 def main():
     parser = argparse.ArgumentParser(description='Process some integers.')

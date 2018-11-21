@@ -12,11 +12,16 @@ import os
 
 class GUISettings():
     def __init__(self):
+        xmlFilePath = str(Path.home()) + "/.cnbitk/cnbimi/xml/"
+        xmlFileName = "mi_stroke_prot.xml"
         self.settingsFile = str(Path.home()) + '/.patientalloc/settings.yml'
         self.fileName = "sinergia.db"
         self.folder = str(Path.home()) + '/.patientalloc/SinergiaPatients'
         self.server = ""
         self.saveMode = "local"
+        self.subjectCreationType = "BCI"
+        self.savingProperties = {"folder": str(Path.home()) + "/data/",
+                                 "xmlFilePath": xmlFilePath, "xmlFileName": xmlFileName}
 
     def createSettingsFile(self):
         if not os.path.exists(os.path.dirname(self.settingsFile)):
@@ -25,11 +30,11 @@ class GUISettings():
 
     def save(self):
         with open(self.settingsFile, 'w') as guiInfo:
-                document = {'fileName' : self.fileName,
-                            'folder':  self.folder,
-                            'saveMode': self.saveMode,
-                            'server': self.server}
-                yaml.dump(document, guiInfo)
+            document = {'fileName': self.fileName,
+                        'folder':  self.folder,
+                        'saveMode': self.saveMode,
+                        'server': self.server}
+            yaml.dump(document, guiInfo)
 
     def load(self):
         with open(self.settingsFile, 'r') as guiFile:
