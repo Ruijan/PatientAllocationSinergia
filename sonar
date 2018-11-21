@@ -1,0 +1,6 @@
+sonar-scanner \
+  -Dsonar.projectKey=Ruijan_PatientAllocationSinergia \
+  -Dsonar.organization=ruijan-github \
+  -Dsonar.sources=patientalloc \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=86ae8551491123a46722be5a5bfd400ff020badd

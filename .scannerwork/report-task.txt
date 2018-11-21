@@ -1,0 +1,7 @@
+organization=ruijan-github
+projectKey=Ruijan_PatientAllocationSinergia
+serverUrl=https://sonarcloud.io
+serverVersion=7.5.0.19485
+dashboardUrl=https://sonarcloud.io/dashboard?id=Ruijan_PatientAllocationSinergia
+ceTaskId=AWc2vBbhjpbiwX4zjRfk
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AWc2vBbhjpbiwX4zjRfk

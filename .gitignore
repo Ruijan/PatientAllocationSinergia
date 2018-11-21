@@ -6,6 +6,7 @@
 !patientalloc/tests/database/filledDatabase.db
 !patientalloc/tests/database/biasedFilledDatabase.db
 patient_alloc.egg-info
+.scannerwork
 .idea
 .coverage
 venv

@@ -5,6 +5,12 @@ language: python
 python:
   - 3.6
 
+addons:
+  sonarcloud:
+    organization: Ruijan_PatientAllocationSinergia # the key of the org you chose at step #3
+    token:
+      secure: 86ae8551491123a46722be5a5bfd400ff020badd # encrypted value of your token
+
 install:
   - pip install codecov
   - pip install appjar
@@ -16,6 +22,7 @@ install:
 script:
   - coverage run patientalloc/tests/DatabaseTestSuite.py
   - coverage xml
+  - sonar-scanner
 
 after_success:
   - codecov
