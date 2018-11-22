@@ -1,0 +1,36 @@
+{
+	"frequency" : 35,
+    "sequence" : [
+        { 
+            "name": "biceps_flexion",
+            "actionType": "limited",
+        	"delay": 1000,
+        	"duration" : 4500,
+        	"channel" : 1,
+        	"currentIncrementMode" : "linear",
+            "pulseWidthIncrementMode" : "linear",
+        	"currentIncrementerParameters" : [0, 12, 2000],
+            "pulseWidthIncrementerParameters" : [0, 2, 0],
+            "currentDecrementMode" : "linear",
+            "pulseWidthDecrementMode" : "linear",
+         	"currentDecrementerParameters" : [0, 12, 1500],
+            "pulseWidthDecrementerParameters" : [0, 2, 0]
+	    },
+        { 
+            "name": "wrist_flexion",
+            "actionType": "limited",
+            "delay": 0,
+            "duration" : 4000,
+            "channel" : 2,
+            "currentIncrementMode" : "linear",
+            "pulseWidthIncrementMode" : "linear",
+        	"currentIncrementerParameters" : [0, 7, 2000],
+            "pulseWidthIncrementerParameters" : [0, 2, 0],
+            "currentDecrementMode" : "linear",
+            "pulseWidthDecrementMode" : "linear",
+        	"currentDecrementerParameters" : [0, 7, 1000],
+            "pulseWidthDecrementerParameters" : [0, 2, 0]
+        }
+    ]
+}
+

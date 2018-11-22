@@ -37,16 +37,18 @@ class testGUISettings(unittest.TestCase):
         self.__assertDefaulDatabasetSettingsValues__()
 
     def __assertDefaulDatabasetSettingsValues__(self):
-        xmlFilePath = str(Path.home()) + "/.cnbitk/cnbimi/xml/"
-        xmlFileName = "mi_stroke_prot.xml"
+        xml_file_path = str(Path.home()) + "/.cnbitk/cnbimi/xml/"
+        xml_file_name = "mi_stroke_prot.xml"
         self.assertEqual(self.GUISettings.fileName, "sinergia.db")
         self.assertEqual(self.GUISettings.folder, str(
             Path.home()) + '/.patientalloc/SinergiaPatients')
         self.assertEqual(self.GUISettings.server, "")
         self.assertEqual(self.GUISettings.saveMode, "local")
         self.assertEqual(self.GUISettings.subjectCreationType, "BCI")
-        self.assertEqual(self.GUISettings.savingProperties, {"folder": str(Path.home()) + "/data/",
-                                                             "xmlFilePath": xmlFilePath, "xmlFileName": xmlFileName})
+        properties = {"folder": str(Path.home(
+        )) + "/data/", "xml_file_path": xml_file_path, "xml_file_name": xml_file_name,
+            "resources": str(Path.home()) + "/dev/fesapps/fesjson/resources/"}
+        self.assertEqual(self.GUISettings.savingProperties, properties)
 
     def tearDown(self):
         if os.path.exists(self.fullpath):

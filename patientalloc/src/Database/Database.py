@@ -91,8 +91,8 @@ class Database:
                 self.field_types.append(db_info["fields"][field]["type"])
                 self.limited_values.append(
                     db_info["fields"][field]["limitedValues"])
-            if "rejected_entries" in db_info:
-                self.rejected_entries = db_info["rejected_entries"]
+            if "rejectedEntries" in db_info:
+                self.rejected_entries = db_info["rejectedEntries"]
             self.groups = db_info['groups']
             self.order = db_info['order']
             fullpath = self.folder + "/" + db_info["databaseFile"]
@@ -138,19 +138,19 @@ class Database:
         fullpath = self.folder + "/" + self.file_name.replace('db', 'csv')
         os.remove(fullpath)
 
-    def addField(self, field, ttest, fieldType, limited_values=''):
+    def addField(self, field, ttest, field_type, limited_values=''):
         if(field == ""):
             raise DatabaseError.EmptyFieldError()
         self.fields.append(field)
         self.ttest.append(int(ttest))
-        self.field_types.append(fieldType)
+        self.field_types.append(field_type)
         self.limited_values.append(limited_values)
         self.order.append(field)
 
-    def addFields(self, fields, ttests, fieldTypes):
+    def addFields(self, fields, ttests, field_types):
         fieldIndex = 0
         for field in fields:
-            self.addField(field, ttests[fieldIndex], fieldTypes[fieldIndex])
+            self.addField(field, ttests[fieldIndex], field_types[fieldIndex])
             fieldIndex += 1
 
     def addEntryWithGroup(self, entry):
@@ -164,20 +164,20 @@ class Database:
         if(field not in self.fields):
             print(field)
             raise DatabaseError.EntryWithUnknownFields
-        indexField = self.fields.index(field)
-        if self.ttest[indexField] is 0:
+        index_field = self.fields.index(field)
+        if self.ttest[index_field] is 0:
             raise DatabaseError.CannotComputeTTestOnField(field)
         groups = ({self.groups[0]: [], self.groups[1]: []})
         pvalue = 0
-        entryNumber = 0
+        entry_number = 0
         for entry in self.entries:
-            if entryNumber + 1 not in self.rejected_entries:
+            if entry_number + 1 not in self.rejected_entries:
                 if self.getFieldTypeFromField(field) == "List":
                     groups[entry["Group"]].append(
                         self.getLimitedValuesFromField(field).index(entry[field]))
                 elif self.getFieldTypeFromField(field) == "Number":
                     groups[entry["Group"]].append(int(float(entry[field])))
-            entryNumber = entryNumber + 1
+            entry_number = entry_number + 1
         if self.getFieldTypeFromField(field) == "List":
             obs = [groups[self.groups[0]].count(
                 0), groups[self.groups[0]].count(1)]
@@ -190,19 +190,19 @@ class Database:
         return pvalue
 
     def getGroupsProbabilitiesFromNewEntry(self, newEntry):
-        groupCounter = {self.groups[0]: 0, self.groups[1]: 1}
+        group_counter = {self.groups[0]: 0, self.groups[1]: 1}
         for entry in self.entries:
             for group in self.groups:
                 if entry['Group'] == group:
-                    groupCounter[group] = groupCounter[group] + 1
-        if abs(groupCounter[self.groups[0]] - groupCounter[self.groups[1]]) >= 4:
-            if groupCounter[self.groups[0]] - groupCounter[self.groups[1]] >= 0:
+                    group_counter[group] = group_counter[group] + 1
+        if abs(group_counter[self.groups[0]] - group_counter[self.groups[1]]) >= 4:
+            if group_counter[self.groups[0]] - group_counter[self.groups[1]] >= 0:
                 probas = {self.groups[0]: 0, self.groups[1]: 1}
             else:
                 probas = {self.groups[0]: 1, self.groups[1]: 0}
             return probas
         pvalues = dict()
-        productsPValues = dict()
+        products_pvalues = dict()
         for group in self.groups:
             database = self.createCopy()
             newEntryGroup = dict(newEntry)
@@ -221,21 +221,21 @@ class Database:
                 except DatabaseError.CannotComputeTTestOnField:
                     pass
             pvalues[group] = minPvalue
-            productsPValues[group] = productPValue
+            products_pvalues[group] = productPValue
         probas = dict()
-        if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and productsPValues[self.groups[0]] == 0 and productsPValues[self.groups[1]] == 0:
+        if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and products_pvalues[self.groups[0]] == 0 and products_pvalues[self.groups[1]] == 0:
             probas[self.groups[0]] = 0.5
             probas[self.groups[1]] = 0.5
         elif pvalues[self.groups[0]] == pvalues[self.groups[1]]:
-            probas[self.groups[0]] = productsPValues[self.groups[0]] / (productsPValues[self.groups[0]] +
-                                                                        productsPValues[self.groups[1]])
-            probas[self.groups[1]] = productsPValues[self.groups[1]] / (productsPValues[self.groups[0]] +
-                                                                        productsPValues[self.groups[1]])
+            probas[self.groups[0]] = products_pvalues[self.groups[0]] / (products_pvalues[self.groups[0]]
+                                                                         + products_pvalues[self.groups[1]])
+            probas[self.groups[1]] = products_pvalues[self.groups[1]] / (products_pvalues[self.groups[0]]
+                                                                         + products_pvalues[self.groups[1]])
         else:
-            probas[self.groups[0]] = pvalues[self.groups[0]] / (pvalues[self.groups[0]] +
-                                                                pvalues[self.groups[1]])
-            probas[self.groups[1]] = pvalues[self.groups[1]] / (pvalues[self.groups[0]] +
-                                                                pvalues[self.groups[1]])
+            probas[self.groups[0]] = pvalues[self.groups[0]] / (pvalues[self.groups[0]]
+                                                                + pvalues[self.groups[1]])
+            probas[self.groups[1]] = pvalues[self.groups[1]] / (pvalues[self.groups[0]]
+                                                                + pvalues[self.groups[1]])
         return probas
 
     def getGroupFromNewEntry(self, newEntry):

@@ -1,7 +1,6 @@
 import unittest
 import patientalloc
 from unittest.mock import MagicMock
-from unittest.mock import patch
 from pathlib import Path
 import os
 import getpass
@@ -20,7 +19,7 @@ class TestBCISubject(unittest.TestCase):
         xml_file_path = xml_file_path + "/database/"
         xml_file_name = "mi_stroke_prot.xml"
         self.savingProperties = {"folder": str(Path.home()) + "/data/test",
-                                 "xml_file_path": xml_file_path, "xml_file_name": xml_file_name}
+                                 "xml_file_path": xml_file_path, "xml_file_name": xml_file_name, "resources": xml_file_path + "resources/"}
         self.dataPath = self.savingProperties["folder"]
         self.subjectPath = self.dataPath + "/" + self.properties["SubjectID"]
         self.resourcesPath = self.subjectPath + "/resources"
@@ -33,16 +32,16 @@ class TestBCISubject(unittest.TestCase):
         self.assertEqual(self.subject.matching_subject_id,
                          self.matching_subject_id)
 
-    def test_XML_update_with_sham_group(self):
-        self.subject.createDataFolder()
-        self.subject.updateXML()
+    def test_subject_creation(self):
+        self.subject.create()
+        self.__check_XML_Values__()
+        self.__check_data_folder_creation__()
+        self.__check_resources_creation__()
 
+    def __check_XML_Values__(self):
         tree = ET.parse(self.savingProperties["folder"] + "/" +
                         self.properties["SubjectID"] + "/" + self.savingProperties["xml_file_name"])
         root = tree.getroot()
-        self.__check_XML_Values__(root)
-
-    def __check_XML_Values__(self, root):
         now = datetime.datetime.now()
         self.assertEqual(root.find('subject').find(
             'id').text, self.properties["SubjectID"])
@@ -55,15 +54,13 @@ class TestBCISubject(unittest.TestCase):
         self.assertEqual(root.find('classifiers').find(
             'mi').find('ndf').find('exec').text, 'ndf_mi_')
 
-    def test_create_data_folder(self):
-        self.subject.createDataFolder()
+    def __check_data_folder_creation__(self):
         self.assertTrue(os.path.isdir(self.dataPath))
         self.assertTrue(os.path.isdir(self.subjectPath))
         self.assertTrue(os.path.exists(
             self.subjectPath + "/" + self.savingProperties["xml_file_name"]))
 
-    def testCreateResources(self):
-        self.subject.createResources()
+    def __check_resources_creation__(self):
         files = {"authorized": "AuthorizedMovements.json", "flexion": "flexion.json", "reaching": "extension.json",
                  "lowstimSingle": "lowStimSingle.json", "lowstimDouble": "lowStimDouble.json", "reset": "reset.json"}
         self.assertTrue(os.path.isdir(self.resourcesPath))

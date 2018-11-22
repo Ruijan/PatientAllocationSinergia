@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 import patientalloc
 import getpass
-import os
-from shutil import copyfile
-import xml.etree.ElementTree as ET
 from appJar import appjar
 import patientalloc.src.Database.DatabaseError as DatabaseError
-import json
-import datetime
-import random
 import math
 
 
@@ -22,7 +16,7 @@ class DatabaseLoaderDisplay():
         self.labels_to_remove = []
         self.buttons_to_remove = []
         self.checkboxes_to_remove = []
-        self.optionBox_to_remove = []
+        self.option_box_to_remove = []
         self.entries_to_remove = []
         self.subject_factory = None
 
@@ -83,11 +77,13 @@ class DatabaseLoaderDisplay():
         self.app.addLabel("Reject", "Reject", row=0, column=field_index)
         self.labels_to_remove.append("Reject")
         entry_index = 1
+        print('rejected entries')
+        print(self.database.rejected_entries)
         for entry in self.database.entries:
             self.app.addNamedCheckBox(
                 "", "Reject_" + str(entry_index), row=entry_index, column=field_index)
             self.checkboxes_to_remove.append("Reject_" + str(entry_index))
-            if entry_index in self.database.rejectedEntries:
+            if entry_index in self.database.rejected_entries:
                 self.app.setCheckBox("Reject_" + str(entry_index), True, False)
             else:
                 self.app.setCheckBox(
@@ -113,7 +109,7 @@ class DatabaseLoaderDisplay():
 
     def __reject_entry__(self, entry):
         entry_index = int(entry[7:len(entry)])
-        if entry_index in self.database.rejectedEntries:
+        if entry_index in self.database.rejected_entries:
             self.database.unrejectEntry(entry_index)
         else:
             self.database.rejectEntry(entry_index)
@@ -148,7 +144,7 @@ class DatabaseLoaderDisplay():
                 if self.database.getFieldTypeFromField(field) == "List":
                     self.app.addOptionBox("New " + field, self.database.getLimitedValuesFromField(
                         field), row=entry_index, column=field_index)
-                    self.optionBox_to_remove.append("New " + field)
+                    self.option_box_to_remove.append("New " + field)
                 elif self.database.getFieldTypeFromField(field) == "Number":
                     self.app.addNumericEntry(
                         "New " + field, row=entry_index, column=field_index)
@@ -208,14 +204,14 @@ class DatabaseLoaderDisplay():
                 self.app.removeCheckBox(checkbox)
             for button in self.buttons_to_remove:
                 self.app.removeButton(button)
-            for box in self.optionBox_to_remove:
+            for box in self.option_box_to_remove:
                 self.app.removeOptionBox(box)
             self.app.removeFrame("DatabaseDisplay")
             del self.labels_to_remove[:]
             del self.entries_to_remove[:]
             del self.checkboxes_to_remove[:]
             del self.buttons_to_remove[:]
-            del self.optionBox_to_remove[:]
+            del self.option_box_to_remove[:]
 
     def __try_removing_check_probability_frame__(self):
         try:

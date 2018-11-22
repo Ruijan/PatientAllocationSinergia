@@ -115,9 +115,9 @@ class TestDatabase(unittest.TestCase):
 
     def test_add_entry_with_wrong_field_names(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        wrongFieldsEntry = {self.fields[0]: 's01', 'FMA': 56}
+        wrong_fields_entry = {self.fields[0]: 's01', 'FMA': 56}
         with self.assertRaises(patientalloc.DatabaseError.EntryWithUnknownFields):
-            self.database.addEntryWithGroup(wrongFieldsEntry)
+            self.database.addEntryWithGroup(wrong_fields_entry)
 
     def test_loading_from_DB_file(self):
         self.database.file_name = "filledDatabase.db"
@@ -234,17 +234,17 @@ class TestDatabase(unittest.TestCase):
             self.database.addEntryWithGroup(entry)
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
-        original_PValue = self.database.getPValue("Age")
+        original_pvalue = self.database.getPValue("Age")
         self.database.addEntryWithGroup(self.possible_entries[2])
-        rejectedEntry = len(self.database.entries)
-        previousPValue = self.database.getPValue("Age")
-        self.database.rejectEntry(rejectedEntry)
-        currentPValue = self.database.getPValue("Age")
-        print(currentPValue)
-        print(original_PValue)
-        print(previousPValue)
-        self.assertEqual(currentPValue, original_PValue)
-        self.assertTrue(currentPValue != previousPValue)
+        rejected_entry = len(self.database.entries)
+        previous_pvalue = self.database.getPValue("Age")
+        self.database.rejectEntry(rejected_entry)
+        current_pvalue = self.database.getPValue("Age")
+        print(current_pvalue)
+        print(original_pvalue)
+        print(previous_pvalue)
+        self.assertEqual(current_pvalue, original_pvalue)
+        self.assertTrue(current_pvalue != previous_pvalue)
 
     def test_remove_rejected_entry(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
@@ -252,9 +252,9 @@ class TestDatabase(unittest.TestCase):
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.database.addEntryWithGroup(self.possible_entries[2])
-        rejectedEntry = 1
-        self.database.rejectEntry(rejectedEntry)
-        self.database.unrejectEntry(rejectedEntry)
+        rejected_entry = 1
+        self.database.rejectEntry(rejected_entry)
+        self.database.unrejectEntry(rejected_entry)
         self.assertEqual(len(self.database.rejected_entries), 0)
 
     def test_add_subject_where_max_difference_is_reached(self):
@@ -266,10 +266,10 @@ class TestDatabase(unittest.TestCase):
             self.database.addEntryWithGroup(entry)
         entry = {'SubjectId': 's'
                  + str(5), 'Age': str(random.randint(20, 90)), 'Group': self.groups[0]}
-        expected_PValues = self.database.getGroupsProbabilitiesFromNewEntry(
+        expected_pvalues = self.database.getGroupsProbabilitiesFromNewEntry(
             entry)
-        self.assertEqual(expected_PValues[self.groups[1]], 1)
-        self.assertEqual(expected_PValues[self.groups[0]], 0)
+        self.assertEqual(expected_pvalues[self.groups[1]], 1)
+        self.assertEqual(expected_pvalues[self.groups[0]], 0)
 
     def tearDown(self):
         if self.created:

@@ -1,0 +1,11 @@
+{
+    "frequency" : 35,
+    "sequence" : [
+        {
+        	"actionType": "setter",
+            "channel" : 1,
+            "current": 5,
+            "pulseWidth" : 0.5
+        }
+    ]
+}

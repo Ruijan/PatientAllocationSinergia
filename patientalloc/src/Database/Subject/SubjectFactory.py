@@ -1,6 +1,5 @@
 import patientalloc
 import random
-import math
 
 
 class SubjectFactory:
