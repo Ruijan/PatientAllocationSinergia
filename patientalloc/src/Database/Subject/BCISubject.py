@@ -8,10 +8,10 @@ import json
 
 
 class BCISubject(Subject):
-    def __init__(self, properties, savingProperties, matchingSubjectId):
+    def __init__(self, properties, savingProperties, matching_subject_id):
         Subject.__init__(self, properties)
         self.savingProperties = savingProperties
-        self.matchingSubjectId = matchingSubjectId
+        self.matching_subject_id = matching_subject_id
 
     def create(self):
         self.createDataFolder()
@@ -23,13 +23,13 @@ class BCISubject(Subject):
             os.makedirs(self.savingProperties["folder"])
         if not os.path.isdir(subjectPath):
             os.makedirs(subjectPath)
-        shutil.copyfile(self.savingProperties["xmlFilePath"] + self.savingProperties["xmlFileName"],
-                        subjectPath + "/" + self.savingProperties["xmlFileName"])
+        shutil.copyfile(self.savingProperties["xml_file_path"] + self.savingProperties["xml_file_name"],
+                        subjectPath + "/" + self.savingProperties["xml_file_name"])
 
     def updateXML(self):
         now = datetime.datetime.now()
         xmlFile = self.getSubjectPath() + "/" + \
-            self.savingProperties["xmlFileName"]
+            self.savingProperties["xml_file_name"]
         tree = ET.parse(xmlFile)
         root = tree.getroot()
         root.find('subject').find('id').text = self.properties["SubjectID"]
@@ -37,7 +37,7 @@ class BCISubject(Subject):
         root.find('recording').find('date').text = str(
             now.day) + str(now.month) + str(now.year)
         root.find('protocol').find('mi').find(
-            'fid').text = self.matchingSubjectId
+            'fid').text = self.matching_subject_id
         if self.properties['Group'] == "Sham":
             root.find('classifiers').find('mi').find(
                 'ndf').find('exec').text = "ndf_mi_"

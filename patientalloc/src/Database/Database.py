@@ -11,48 +11,49 @@ from datetime import datetime
 
 class Database:
     def __init__(self):
-        self.fileName = ""
+        self.file_name = ""
         self.folder = ""
         self.fields = []
-        self.fieldTypes = []
+        self.field_types = []
         self.entries = []
         self.ttest = []
         self.groups = []
         self.order = []
-        self.limitedValues = []
-        self.rejectedEntries = []
+        self.limited_values = []
+        self.rejected_entries = []
         random.seed(datetime.now())
 
     def createCopy(self):
         database = Database()
-        database.fileName = self.fileName
+        database.file_name = self.file_name
         database.folder = self.folder
         database.fields = self.fields.copy()
-        database.fieldTypes = self.fieldTypes.copy()
+        database.field_types = self.field_types.copy()
         database.ttest = self.ttest.copy()
         database.groups = self.groups.copy()
         database.entries = self.entries.copy()
         database.order = self.order.copy()
-        database.limitedValues = self.limitedValues.copy()
+        database.limited_alues = self.limited_values.copy()
+        database.rejected_entries = self.rejected_entries.copy()
         return database
 
     def create(self):
-        fullpath = self.folder + "/" + self.fileName
+        fullpath = self.folder + "/" + self.file_name
         self.createWithFullPath(fullpath)
 
     def createWithFullPath(self, fullpath):
-        self.__setFileAndPathFromFullpath__(fullpath)
+        self.__set_file_and_path_from_full_path__(fullpath)
         if(not os.path.isdir(self.folder)):
             os.mkdir(self.folder)
-        self.__checkWritingPath__(fullpath)
+        self.__check_writing_path__(fullpath)
         if 'Group' not in self.fields:
             self.addField('Group', 0, 'Hidden')
-        with open(fullpath, 'w') as dbInfoFile:
-            document = {'databaseFile': self.fileName.replace('db', 'csv'),
+        with open(fullpath, 'w') as db_info_file:
+            document = {'databaseFile': self.file_name.replace('db', 'csv'),
                         'order': self.order,
                         'fields': dict(),
                         'groups': self.groups,
-                        'rejectedEntries': self.rejectedEntries}
+                        'rejected_entries': self.rejected_entries}
             for field in self.fields:
                 document['fields'][field] = dict()
                 document['fields'][field]['ttest'] = self.getTtestFromField(
@@ -61,47 +62,47 @@ class Database:
                     field)
                 document['fields'][field]['limitedValues'] = self.getLimitedValuesFromField(
                     field)
-            yaml.dump(document, dbInfoFile)
-        fullpath = self.folder + "/" + self.fileName.replace('db', 'csv')
+            yaml.dump(document, db_info_file)
+        fullpath = self.folder + "/" + self.file_name.replace('db', 'csv')
         with open(fullpath, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fields)
             writer.writeheader()
             for entry in self.entries:
                 writer.writerow(entry)
 
-    def __setFileAndPathFromFullpath__(self, fullpath):
-        explodedPath = fullpath.split("/")
-        self.fileName = explodedPath[len(explodedPath) - 1]
-        explodedPath[len(explodedPath) - 1] = ""
-        self.folder = "/".join(explodedPath)
+    def __set_file_and_path_from_full_path__(self, fullpath):
+        exploded_path = fullpath.split("/")
+        self.file_name = exploded_path[len(exploded_path) - 1]
+        exploded_path[len(exploded_path) - 1] = ""
+        self.folder = "/".join(exploded_path)
 
-    def __checkWritingPath__(self, fullpath):
-        if(self.fileName == ""):
+    def __check_writing_path__(self, fullpath):
+        if(self.file_name == ""):
             raise DatabaseError.EmptyFileNameError()
 
     def loadWithFullPath(self, fullpath):
-        self.__setFileAndPathFromFullpath__(fullpath)
-        self.__checkReadingPath__(fullpath)
+        self.__set_file_and_path_from_full_path__(fullpath)
+        self.__check_reading_path__(fullpath)
         with open(fullpath, 'r') as dbFile:
-            dbInfo = yaml.safe_load(dbFile)
-            for field in dbInfo["fields"]:
+            db_info = yaml.safe_load(dbFile)
+            for field in db_info["fields"]:
                 self.fields.append(field)
-                self.ttest.append(dbInfo["fields"][field]["ttest"])
-                self.fieldTypes.append(dbInfo["fields"][field]["type"])
-                self.limitedValues.append(
-                    dbInfo["fields"][field]["limitedValues"])
-            if "rejectedEntries" in dbInfo:
-                self.rejectedEntries = dbInfo["rejectedEntries"]
-            self.groups = dbInfo['groups']
-            self.order = dbInfo['order']
-            fullpath = self.folder + "/" + dbInfo["databaseFile"]
+                self.ttest.append(db_info["fields"][field]["ttest"])
+                self.field_types.append(db_info["fields"][field]["type"])
+                self.limited_values.append(
+                    db_info["fields"][field]["limitedValues"])
+            if "rejected_entries" in db_info:
+                self.rejected_entries = db_info["rejected_entries"]
+            self.groups = db_info['groups']
+            self.order = db_info['order']
+            fullpath = self.folder + "/" + db_info["databaseFile"]
             with open(fullpath, 'r') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     self.addEntryWithGroup(row)
 
     def load(self):
-        fullpath = self.folder + "/" + self.fileName
+        fullpath = self.folder + "/" + self.file_name
         self.loadWithFullPath(fullpath)
 
     def getEntryGroup(self, index):
@@ -118,32 +119,32 @@ class Database:
         return self.ttest[self.fields.index(field)]
 
     def getFieldTypeFromField(self, field):
-        return self.fieldTypes[self.fields.index(field)]
+        return self.field_types[self.fields.index(field)]
 
     def getLimitedValuesFromField(self, field):
-        return self.limitedValues[self.fields.index(field)]
+        return self.limited_values[self.fields.index(field)]
 
-    def __checkReadingPath__(self, fullpath):
-        if(self.fileName == ""):
+    def __check_reading_path__(self, fullpath):
+        if(self.file_name == ""):
             raise DatabaseError.EmptyFileNameError()
         if(not os.path.exists(fullpath)):
             raise DatabaseError.FileNotExistError(fullpath)
 
     def destroy(self):
-        fullpath = self.folder + "/" + self.fileName
+        fullpath = self.folder + "/" + self.file_name
         if(not os.path.exists(fullpath)):
             raise DatabaseError.FileNotExistError(fullpath)
         os.remove(fullpath)
-        fullpath = self.folder + "/" + self.fileName.replace('db', 'csv')
+        fullpath = self.folder + "/" + self.file_name.replace('db', 'csv')
         os.remove(fullpath)
 
-    def addField(self, field, ttest, fieldType, limitedValues=''):
+    def addField(self, field, ttest, fieldType, limited_values=''):
         if(field == ""):
             raise DatabaseError.EmptyFieldError()
         self.fields.append(field)
         self.ttest.append(int(ttest))
-        self.fieldTypes.append(fieldType)
-        self.limitedValues.append(limitedValues)
+        self.field_types.append(fieldType)
+        self.limited_values.append(limited_values)
         self.order.append(field)
 
     def addFields(self, fields, ttests, fieldTypes):
@@ -170,7 +171,7 @@ class Database:
         pvalue = 0
         entryNumber = 0
         for entry in self.entries:
-            if entryNumber + 1 not in self.rejectedEntries:
+            if entryNumber + 1 not in self.rejected_entries:
                 if self.getFieldTypeFromField(field) == "List":
                     groups[entry["Group"]].append(
                         self.getLimitedValuesFromField(field).index(entry[field]))
@@ -245,7 +246,7 @@ class Database:
         return self.groups[1]
 
     def rejectEntry(self, index):
-        self.rejectedEntries.append(index)
+        self.rejected_entries.append(index)
 
     def unrejectEntry(self, index):
-        self.rejectedEntries.remove(index)
+        self.rejected_entries.remove(index)

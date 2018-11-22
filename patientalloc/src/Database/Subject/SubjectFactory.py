@@ -14,14 +14,14 @@ class SubjectFactory:
         if self.settings.subjectCreationType == 'Simple':
             subject = patientalloc.Subject(properties)
         elif self.settings.subjectCreationType == 'BCI':
-            matchingSubjectId = self.getMatchingSubjectId()
+            matching_subject_id = self.getMatchingSubjectId()
             subject = patientalloc.BCISubject(
-                properties, self.settings.savingProperties, matchingSubjectId)
+                properties, self.settings.savingProperties, matching_subject_id)
         return subject
 
     def getMatchingSubjectId(self):
-        nbOfEntries = len(self.database.entries) - 1
-        matchingSubjectIndex = random.randint(0, nbOfEntries)
-        while matchingSubjectIndex in self.database.rejectedEntries or self.database.getEntryGroup(matchingSubjectIndex) != "BCI":
-            matchingSubjectIndex = random.randint(0, nbOfEntries)
-        return self.database.getEntryId(matchingSubjectIndex)
+        nb_of_entries = len(self.database.entries) - 1
+        matching_subject_index = random.randint(0, nb_of_entries)
+        while matching_subject_index in self.database.rejected_entries or self.database.getEntryGroup(matching_subject_index) != "BCI":
+            matching_subject_index = random.randint(0, nb_of_entries)
+        return self.database.getEntryId(matching_subject_index)

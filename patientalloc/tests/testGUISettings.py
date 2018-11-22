@@ -15,6 +15,12 @@ class testGUISettings(unittest.TestCase):
             Path.home()) + '/.patientalloc/settings.yml')
         self.__assertDefaulDatabasetSettingsValues__()
 
+    def testGUISettingsFileCreation(self):
+        self.GUISettings.settingsFile = self.fullpath
+        self.GUISettings.createSettingsFile()
+        self.assertTrue(os.path.isdir(str(Path.home()) + '/.patientalloc'))
+        self.assertTrue(os.path.exists(self.fullpath))
+
     def testSaveGUISettings(self):
         self.GUISettings.settingsFile = self.fullpath
         self.GUISettings.save()
