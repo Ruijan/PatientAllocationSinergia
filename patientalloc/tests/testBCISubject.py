@@ -23,16 +23,30 @@ class TestBCISubject(unittest.TestCase):
         self.dataPath = self.savingProperties["folder"]
         self.subjectPath = self.dataPath + "/" + self.properties["SubjectID"]
         self.resourcesPath = self.subjectPath + "/resources"
-        self.subject = patientalloc.BCISubject(
-            self.properties, self.savingProperties, self.matching_subject_id)
+
 
     def test_creation(self):
+        self.subject = patientalloc.BCISubject(
+            self.properties, self.savingProperties, self.matching_subject_id)
         self.assertEqual(self.subject.properties, self.properties)
         self.assertEqual(self.subject.savingProperties, self.savingProperties)
         self.assertEqual(self.subject.matching_subject_id,
                          self.matching_subject_id)
 
-    def test_subject_creation(self):
+    def test_sham_subject_creation(self):
+        self.subject = patientalloc.BCISubject(
+            self.properties, self.savingProperties, self.matching_subject_id)
+        self.subject.create()
+        self.__check_XML_Values__()
+        self.__check_data_folder_creation__()
+        self.__check_resources_creation__()
+
+    def test_bci_subject_creation(self):
+        self.properties = {"SubjectID": 'testSubject',
+                   "Age": '50', "Group": 'BCI'}
+        self.subject = patientalloc.BCISubject(
+            self.properties, self.savingProperties, self.matching_subject_id)
+
         self.subject.create()
         self.__check_XML_Values__()
         self.__check_data_folder_creation__()
@@ -51,8 +65,12 @@ class TestBCISubject(unittest.TestCase):
             now.day) + str(now.month) + str(now.year))
         self.assertEqual(root.find('protocol').find(
             'mi').find('fid').text, self.matching_subject_id)
-        self.assertEqual(root.find('classifiers').find(
-            'mi').find('ndf').find('exec').text, 'ndf_mi_')
+        if self.properties['Group'] == 'Sham':
+            self.assertEqual(root.find('classifiers').find(
+                'mi').find('ndf').find('exec').text, 'ndf_mi_')
+        else:
+            self.assertEqual(root.find('classifiers').find(
+                'mi').find('ndf').find('exec').text, 'ndf_mi')
 
     def __check_data_folder_creation__(self):
         self.assertTrue(os.path.isdir(self.dataPath))

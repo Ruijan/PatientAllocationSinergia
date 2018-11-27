@@ -42,7 +42,7 @@ class BCISubject(Subject):
         if self.properties['Group'] == "Sham":
             root.find('classifiers').find('mi').find(
                 'ndf').find('exec').text = "ndf_mi_"
-        else:
+        elif self.properties['Group'] == "BCI":
             root.find('classifiers').find('mi').find(
                 'ndf').find('exec').text = "ndf_mi"
         tree.write(xmlFile)

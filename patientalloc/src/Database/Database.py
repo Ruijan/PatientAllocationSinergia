@@ -48,7 +48,11 @@ class Database:
         self.__check_writing_path__(fullpath)
         if 'Group' not in self.fields:
             self.addField('Group', 0, 'Hidden')
-        with open(fullpath, 'w') as db_info_file:
+        self.__fill_info_database_file__(fullpath)
+        self.__fill_database_csv_file__()
+
+    def __fill_info_database_file__(self, path_to_info_db_file):
+        with open(path_to_info_db_file, 'w') as db_info_file:
             document = {'databaseFile': self.file_name.replace('db', 'csv'),
                         'order': self.order,
                         'fields': dict(),
@@ -63,6 +67,8 @@ class Database:
                 document['fields'][field]['limitedValues'] = self.getLimitedValuesFromField(
                     field)
             yaml.dump(document, db_info_file)
+
+    def __fill_database_csv_file__(self):
         fullpath = self.folder + "/" + self.file_name.replace('db', 'csv')
         with open(fullpath, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fields)
