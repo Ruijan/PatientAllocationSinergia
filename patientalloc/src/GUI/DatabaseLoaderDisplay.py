@@ -170,7 +170,7 @@ class DatabaseLoaderDisplay():
     def __check_probability_groups__(self):
         self.__try_removing_check_probability_frame__()
         subject = self.__create_subject_properties_from_form_values__()
-        probabilities = self.database.getGroupsProbabilitiesFromNewEntry(
+        probabilities = self.database.get_groups_probabilities_from_new_entry(
             subject)
         index_key = 0
         for key in probabilities.keys():

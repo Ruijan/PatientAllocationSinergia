@@ -81,7 +81,7 @@ class TestDatabase(unittest.TestCase):
 
     def test_fields_added_to_CSV(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.create()
         self.created = True
         self.database.fields = []
@@ -94,7 +94,7 @@ class TestDatabase(unittest.TestCase):
 
     def test_entries_added_to_CSV(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.entry)
         self.database.create()
         self.created = True
@@ -112,6 +112,7 @@ class TestDatabase(unittest.TestCase):
         self.database.addFields(self.fields, self.ttest, self.field_types)
         self.database.addEntryWithGroup(self.entry)
         self.assertEqual(self.database.entries[0], self.entry)
+        self.assertEqual(self.database.group_counter[self.entry["Group"]], 1)
 
     def test_add_entry_with_wrong_field_names(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
@@ -125,16 +126,18 @@ class TestDatabase(unittest.TestCase):
         self.__check_correct_DB_Info__()
         self.assertEqual(self.database.entries[0], self.entry)
         self.assertEqual(len(self.database.entries), 6)
+        self.assertEqual(self.database.group_counter["BCI"], 4)
+        self.assertEqual(self.database.group_counter["Sham"], 2)
 
     def test_get_entry_group_with_wrong_index_should_throw(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         with self.assertRaises(patientalloc.DatabaseError.EntryOutOfRange):
             self.database.getEntryGroup(2)
 
     def test_get_entry_group(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.database.addEntryWithGroup(self.possible_entries[2])
@@ -147,11 +150,17 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(self.database.entries[0], self.entry)
         self.assertEqual(len(self.database.entries), 6)
 
-    def test_get_PValue_from_field(self):
+    def test_get_pvalue_from_field(self):
         self.database.file_name = "filledDatabase.db"
         self.database.load()
         self.assertTrue(self.database.getPValue("Age") <= 1)
         self.assertTrue(self.database.getPValue("Age") >= 0)
+
+    def test_get_pvalue_from_wrong_field_should_throw(self):
+        self.database.file_name = "filledDatabase.db"
+        self.database.load()
+        with self.assertRaises(patientalloc.DatabaseError.EntryWithUnknownFields):
+            self.database.getPValue("age")
 
     def test_get_most_probable_group_from_entry(self):
         self.database.file_name = "filledDatabase.db"
@@ -167,26 +176,26 @@ class TestDatabase(unittest.TestCase):
 
     def test_add_entry_to_empty_database(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         new_entry = {'SubjectId': 's01', 'Age': '65'}
         self.__check_group_distribution__(new_entry, 0.5)
 
     def test_add_entry_to_one_line_database(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.__check_group_distribution__(self.possible_entries[1], 0.5)
 
     def test_add_entry_to_two_lines_database(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.__check_group_distribution__(self.possible_entries[3], 0.5)
 
     def test_add_entry_to_three_lines_database(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.database.addEntryWithGroup(self.possible_entries[2])
@@ -215,19 +224,18 @@ class TestDatabase(unittest.TestCase):
 
     def test_add_rejected_entry(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.database.addEntryWithGroup(self.possible_entries[2])
-        self.database.addEntryWithGroup(self.possible_entries[3])
         self.database.rejectEntry(2)
         self.assertEqual(self.database.rejected_entries[0], 2)
         self.assertEqual(
             self.database.entries[self.database.rejected_entries[0]], self.possible_entries[2])
 
-    def test_add_rejected_entry_should_not_compute_PValue(self):
+    def test_add_rejected_entry_should_not_compute_pvalue(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         for x in range(20):
             entry = {'SubjectId': 's0' + str(x), 'Age': str(
                 random.randint(20, 90)), 'Group': self.groups[random.randint(0, 1)]}
@@ -248,7 +256,7 @@ class TestDatabase(unittest.TestCase):
 
     def test_remove_rejected_entry(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         self.database.addEntryWithGroup(self.possible_entries[0])
         self.database.addEntryWithGroup(self.possible_entries[1])
         self.database.addEntryWithGroup(self.possible_entries[2])
@@ -257,19 +265,33 @@ class TestDatabase(unittest.TestCase):
         self.database.unrejectEntry(rejected_entry)
         self.assertEqual(len(self.database.rejected_entries), 0)
 
-    def test_add_subject_where_max_difference_is_reached(self):
+    def test_add_subject_where_max_difference_is_reached_with_BCI(self):
         self.database.addFields(self.fields, self.ttest, self.field_types)
-        self.database.groups = self.groups.copy()
+        self.database.setGroups(self.groups.copy())
         for x in range(0, 5):
-            entry = {'SubjectId': 's'
-                     + str(x), 'Age': str(random.randint(20, 90)), 'Group': self.groups[0]}
+            entry = {'SubjectId': 's' +
+                     str(x), 'Age': str(random.randint(20, 90)), 'Group': self.groups[0]}
             self.database.addEntryWithGroup(entry)
-        entry = {'SubjectId': 's'
-                 + str(5), 'Age': str(random.randint(20, 90)), 'Group': self.groups[0]}
-        expected_pvalues = self.database.getGroupsProbabilitiesFromNewEntry(
+        entry = {'SubjectId': 's' +
+                 str(5), 'Age': str(random.randint(20, 90)), 'Group': self.groups[0]}
+        expected_pvalues = self.database.get_groups_probabilities_from_new_entry(
             entry)
         self.assertEqual(expected_pvalues[self.groups[1]], 1)
         self.assertEqual(expected_pvalues[self.groups[0]], 0)
+
+    def test_add_subject_where_max_difference_is_reached_with_sham(self):
+        self.database.addFields(self.fields, self.ttest, self.field_types)
+        self.database.setGroups(self.groups.copy())
+        for x in range(0, 5):
+            entry = {'SubjectId': 's' +
+                     str(x), 'Age': str(random.randint(20, 90)), 'Group': self.groups[1]}
+            self.database.addEntryWithGroup(entry)
+        entry = {'SubjectId': 's' +
+                 str(5), 'Age': str(random.randint(20, 90)), 'Group': self.groups[1]}
+        expected_pvalues = self.database.get_groups_probabilities_from_new_entry(
+            entry)
+        self.assertEqual(expected_pvalues[self.groups[1]], 0)
+        self.assertEqual(expected_pvalues[self.groups[0]], 1)
 
     def tearDown(self):
         if self.created:

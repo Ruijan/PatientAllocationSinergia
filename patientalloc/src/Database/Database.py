@@ -18,6 +18,7 @@ class Database:
         self.entries = []
         self.ttest = []
         self.groups = []
+        self.group_counter = dict()
         self.order = []
         self.limited_values = []
         self.rejected_entries = []
@@ -35,6 +36,7 @@ class Database:
         database.order = self.order.copy()
         database.limited_alues = self.limited_values.copy()
         database.rejected_entries = self.rejected_entries.copy()
+        database.group_counter = self.group_counter.copy()
         return database
 
     def create(self):
@@ -101,6 +103,8 @@ class Database:
                 self.rejected_entries = db_info["rejectedEntries"]
             self.groups = db_info['groups']
             self.order = db_info['order']
+            for group in self.groups:
+                self.group_counter[group] = 0
             fullpath = self.folder + "/" + db_info["databaseFile"]
             with open(fullpath, 'r') as csvfile:
                 reader = csv.DictReader(csvfile)
@@ -165,6 +169,14 @@ class Database:
                 print(field)
                 raise DatabaseError.EntryWithUnknownFields
         self.entries.append(entry)
+        if entry["Group"] not in self.group_counter:
+            self.group_counter[entry["Group"]] = 0
+        self.group_counter[entry["Group"]] += 1
+
+    def setGroups(self, groups):
+        self.groups = groups
+        for group in self.groups:
+            self.group_counter[group] = 0
 
     def getPValue(self, field):
         if(field not in self.fields):
@@ -195,23 +207,24 @@ class Database:
                 groups[self.groups[0]], groups[self.groups[1]], equal_var=False)
         return pvalue
 
-    def getGroupsProbabilitiesFromNewEntry(self, newEntry):
-        group_counter = {self.groups[0]: 0, self.groups[1]: 1}
-        for entry in self.entries:
-            for group in self.groups:
-                if entry['Group'] == group:
-                    group_counter[group] = group_counter[group] + 1
-        if abs(group_counter[self.groups[0]] - group_counter[self.groups[1]]) >= 4:
-            if group_counter[self.groups[0]] - group_counter[self.groups[1]] >= 0:
+    def get_groups_probabilities_from_new_entry(self, new_entry):
+        if self.__is_group_size_difference_significant__():
+            if self.group_counter[self.groups[0]] - self.group_counter[self.groups[1]] >= 0:
                 probas = {self.groups[0]: 0, self.groups[1]: 1}
             else:
                 probas = {self.groups[0]: 1, self.groups[1]: 0}
             return probas
+        else:
+            [pvalues, products_pvalues] = self.__create_pvalues_for_all_groups__(
+                new_entry)
+            return self.__get_allocation_probability_from_pvalues__(pvalues, products_pvalues)
+
+    def __create_pvalues_for_all_groups__(self, new_entry):
         pvalues = dict()
         products_pvalues = dict()
         for group in self.groups:
             database = self.createCopy()
-            newEntryGroup = dict(newEntry)
+            newEntryGroup = dict(new_entry)
             newEntryGroup["Group"] = group
             database.addEntryWithGroup(newEntryGroup)
             minPvalue = 1
@@ -228,6 +241,9 @@ class Database:
                     pass
             pvalues[group] = minPvalue
             products_pvalues[group] = productPValue
+        return pvalues, products_pvalues
+
+    def __get_allocation_probability_from_pvalues__(self, pvalues, products_pvalues):
         probas = dict()
         if pvalues[self.groups[0]] == 0 and pvalues[self.groups[1]] == 0 and products_pvalues[self.groups[0]] == 0 and products_pvalues[self.groups[1]] == 0:
             probas[self.groups[0]] = 0.5
@@ -244,8 +260,11 @@ class Database:
                                                                 + pvalues[self.groups[1]])
         return probas
 
-    def getGroupFromNewEntry(self, newEntry):
-        probas = self.getGroupsProbabilitiesFromNewEntry(newEntry)
+    def __is_group_size_difference_significant__(self):
+        return abs(self.group_counter[self.groups[0]] - self.group_counter[self.groups[1]]) >= 4
+
+    def getGroupFromNewEntry(self, new_entry):
+        probas = self.get_groups_probabilities_from_new_entry(new_entry)
         proba = random.random()
         if proba < probas[self.groups[0]]:
             return self.groups[0]
