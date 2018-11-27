@@ -22,7 +22,7 @@ You need pip to install the package.
 To install the package:
 
 ```
-pip install .
+pip3 install .
 ```
 
 ## Launch
@@ -49,7 +49,7 @@ In order to save the database at the correct place, please provide the folder na
 ## Modify
 You are invited to modify the software the way you like it. Remember that coverage tests have been added and you can use them to assess the quality of your modifications. You can run these tests with these commands:
 ```
-pip install .
+pip3 install .
 python3 setup.py tests
 ```
 Please use test-driven development when you apply changes to the code. Check if your modifications don't break previous tests.
