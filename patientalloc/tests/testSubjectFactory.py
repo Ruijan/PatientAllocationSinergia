@@ -43,13 +43,13 @@ class TestSubjectFactory(unittest.TestCase):
         self.assertEqual(subject.properties, self.properties)
         self.database.getGroupFromNewEntry.assert_called_with(self.properties)
         self.subjectCreationType.assert_called_with()
-        self.assertEqual(subject.matchingSubjectId, 's04')
+        self.assertEqual(subject.matching_subject_id, 's04')
 
     def testGetMatchingSubjectId(self):
         self.database.getEntryGroup.side_effect = ['Sham', 'BCI']
         self.database.getEntryId = MagicMock(return_value='s03')
-        matchingSubjectId = self.subjectFactory.getMatchingSubjectId()
-        self.assertEqual(matchingSubjectId, 's03')
+        matching_subject_id = self.subjectFactory.getMatchingSubjectId()
+        self.assertEqual(matching_subject_id, 's03')
         self.assertEqual(self.database.getEntryId.call_count, 1)
         self.entries.assert_called_once_with()
         self.assertEqual(self.database.getEntryGroup.call_count, 2)

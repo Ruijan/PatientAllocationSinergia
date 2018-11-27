@@ -8,28 +8,29 @@ import json
 
 
 class BCISubject(Subject):
-    def __init__(self, properties, savingProperties, matchingSubjectId):
+    def __init__(self, properties, savingProperties, matching_subject_id):
         Subject.__init__(self, properties)
         self.savingProperties = savingProperties
-        self.matchingSubjectId = matchingSubjectId
+        self.matching_subject_id = matching_subject_id
 
     def create(self):
-        self.createDataFolder()
-        self.updateXML()
+        self.create_data_folder()
+        self.update_xml()
+        self.create_resources()
 
-    def createDataFolder(self):
-        subjectPath = self.getSubjectPath()
+    def create_data_folder(self):
+        subjectPath = self.__get_subject_path__()
         if not os.path.isdir(self.savingProperties["folder"]):
             os.makedirs(self.savingProperties["folder"])
         if not os.path.isdir(subjectPath):
             os.makedirs(subjectPath)
-        shutil.copyfile(self.savingProperties["xmlFilePath"] + self.savingProperties["xmlFileName"],
-                        subjectPath + "/" + self.savingProperties["xmlFileName"])
+        shutil.copyfile(self.savingProperties["xml_file_path"] + self.savingProperties["xml_file_name"],
+                        subjectPath + "/" + self.savingProperties["xml_file_name"])
 
-    def updateXML(self):
+    def update_xml(self):
         now = datetime.datetime.now()
-        xmlFile = self.getSubjectPath() + "/" + \
-            self.savingProperties["xmlFileName"]
+        xmlFile = self.__get_subject_path__() + "/" + \
+            self.savingProperties["xml_file_name"]
         tree = ET.parse(xmlFile)
         root = tree.getroot()
         root.find('subject').find('id').text = self.properties["SubjectID"]
@@ -37,17 +38,17 @@ class BCISubject(Subject):
         root.find('recording').find('date').text = str(
             now.day) + str(now.month) + str(now.year)
         root.find('protocol').find('mi').find(
-            'fid').text = self.matchingSubjectId
+            'fid').text = self.matching_subject_id
         if self.properties['Group'] == "Sham":
             root.find('classifiers').find('mi').find(
                 'ndf').find('exec').text = "ndf_mi_"
-        else:
+        elif self.properties['Group'] == "BCI":
             root.find('classifiers').find('mi').find(
                 'ndf').find('exec').text = "ndf_mi"
         tree.write(xmlFile)
 
-    def createResources(self):
-        resourcesPath = self.getSubjectPath() + "/resources"
+    def create_resources(self):
+        resourcesPath = self.__get_subject_path__() + "/resources"
         if not os.path.isdir(resourcesPath):
             os.makedirs(resourcesPath)
         files = {"authorized": "AuthorizedMovements.json", "flexion": "flexion.json", "reaching": "extension.json",
@@ -55,8 +56,8 @@ class BCISubject(Subject):
         for file in files:
             pathToFile = resourcesPath + "/" + files[file]
             if not os.path.isfile(resourcesPath + "/" + files[file]):
-                shutil.copyfile(str(Path.home(
-                )) + "/dev/fesapps/fesjson/resources/AuthorizedMovements.json", pathToFile)
+                shutil.copyfile(
+                    self.savingProperties['resources'] + "AuthorizedMovements.json", pathToFile)
         with open(resourcesPath + "/" + files["authorized"], 'r') as f:
             data = json.load(f)
             for movement in data["Movements"]:
@@ -64,7 +65,7 @@ class BCISubject(Subject):
         with open(resourcesPath + "/" + files["authorized"], 'w') as f:
             json.dump(data, f, indent=4)
 
-    def getSubjectPath(self):
+    def __get_subject_path__(self):
         return self.savingProperties["folder"] + \
             "/" + self.properties["SubjectID"]
 

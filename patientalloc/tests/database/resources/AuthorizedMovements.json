@@ -1,0 +1,29 @@
+{
+	"Movements" : [
+		{
+			"Name" : "flexion",
+			"EventId" : 1000,
+			"MovementFile" : "/home/cnbi/dev/fesapps/fesjson/resources/flexionAnn.json"
+		},
+		{
+			"Name" : "reaching",
+			"EventId" : 1001,
+			"MovementFile" : "/home/cnbi/dev/fesapps/fesjson/resources/reachingAnn.json"
+		},
+		{
+			"Name" : "lowstimSingle",
+			"EventId" : 14,
+			"MovementFile" : "/home/cnbi/dev/fesapps/fesjson/resources/lowStimSingleJulien.json"
+		},
+		{
+			"Name" : "lowstimDouble",
+			"EventId" : 13,
+			"MovementFile" : "/home/cnbi/dev/fesapps/fesjson/resources/lowStimDoubleJulien.json"
+		},
+		{
+			"Name" : "reset",
+			"EventId" : 15,
+			"MovementFile" : "/home/cnbi/dev/fesapps/fesjson/resources/reset.json"
+		}
+	]
+}

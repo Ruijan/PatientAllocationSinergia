@@ -14,7 +14,6 @@ from patientalloc.src.Database.DatabaseHandlerFactory import DatabaseHandlerFact
 from patientalloc.src.GUI.GuiDatabaseHandler import GuiDatabaseHandler
 
 import os
-import time
 
 
 class GUI():
