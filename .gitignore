@@ -11,3 +11,4 @@ patient_alloc.egg-info
 .coverage
 venv
 .eggs
+dist
