@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/Ruijan/PatientAllocationSinergia/branch/master/graph/badge.svg)](https://codecov.io/gh/Ruijan/PatientAllocationSinergia)
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/patientallocationsinergia/badge)](https://www.codefactor.io/repository/github/ruijan/patientallocationsinergia)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5839e54e7307428a8291808e2539c4da)](https://www.codacy.com/app/rechenmann/PatientAllocationSinergia?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ruijan/PatientAllocationSinergia&amp;utm_campaign=Badge_Grade)
+[![SonarCloud Badge](https://sonarcloud.io/api/project_badges/measure?project=Ruijan_PatientAllocationSinergia&metric=alert_status)](https://sonarcloud.io/api/project_badges/measure?project=Ruijan_PatientAllocationSinergia&metric=alert_status)
 
 This project aims to sort new patients in different groups in a pseudo-random process and keep non-significant differences between groups.
 It allows you to create your database with different fields:
