@@ -57,7 +57,7 @@ class BCISubject(Subject):
             pathToFile = resourcesPath + "/" + files[file]
             if not os.path.isfile(resourcesPath + "/" + files[file]):
                 shutil.copyfile(
-                    self.savingProperties['resources'] + "AuthorizedMovements.json", pathToFile)
+                    self.savingProperties['resources'] + files[file], pathToFile)
         with open(resourcesPath + "/" + files["authorized"], 'r') as f:
             data = json.load(f)
             for movement in data["Movements"]:
