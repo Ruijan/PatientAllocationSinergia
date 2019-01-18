@@ -77,8 +77,6 @@ class DatabaseLoaderDisplay():
         self.app.addLabel("Reject", "Reject", row=0, column=field_index)
         self.labels_to_remove.append("Reject")
         entry_index = 1
-        print('rejected entries')
-        print(self.database.rejected_entries)
         for entry in self.database.entries:
             self.app.addNamedCheckBox(
                 "", "Reject_" + str(entry_index), row=entry_index, column=field_index)
