@@ -50,6 +50,6 @@ In order to save the database at the correct place, please provide the folder na
 You are invited to modify the software the way you like it. Remember that coverage tests have been added and you can use them to assess the quality of your modifications. You can run these tests with these commands:
 ```
 pip3 install .
-python3 setup.py tests
+python3 setup.py test
 ```
 Please use test-driven development when you apply changes to the code. Check if your modifications don't break previous tests.
