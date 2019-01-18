@@ -59,7 +59,7 @@ class Database:
                         'order': self.order,
                         'fields': dict(),
                         'groups': self.groups,
-                        'rejected_entries': self.rejected_entries}
+                        'rejectedEntries': self.rejected_entries}
             for field in self.fields:
                 document['fields'][field] = dict()
                 document['fields'][field]['ttest'] = self.getTtestFromField(
