@@ -61,13 +61,14 @@ class BCISubject(Subject):
         with open(resourcesPath + "/" + files["authorized"], 'r') as f:
             data = json.load(f)
             for movement in data["Movements"]:
-                movement["MovementFile"] = files[movement["Name"]]
+                movement["MovementFile"] = resourcesPath + \
+                    "/" + files[movement["Name"]]
         with open(resourcesPath + "/" + files["authorized"], 'w') as f:
             json.dump(data, f, indent=4)
 
     def __get_subject_path__(self):
         return self.savingProperties["folder"] + \
-            "/" + self.properties["SubjectID"]
+            self.properties["SubjectID"]
 
     def destroy(self):
         if os.path.exists(self.savingProperties["folder"] + "/" + self.properties["SubjectID"]):
