@@ -223,25 +223,31 @@ class Database:
         pvalues = dict()
         products_pvalues = dict()
         for group in self.groups:
-            database = self.createCopy()
-            newEntryGroup = dict(new_entry)
-            newEntryGroup["Group"] = group
-            database.addEntryWithGroup(newEntryGroup)
-            minPvalue = 1
-            productPValue = 1
-            for field in database.fields:
-                try:
-                    pvalue = database.getPValue(field)
-                    if math.isnan(pvalue):
-                        pvalue = 1
-                    if pvalue < minPvalue:
-                        minPvalue = pvalue
-                    productPValue *= pvalue
-                except DatabaseError.CannotComputeTTestOnField:
-                    pass
+            minPvalue, productPValue = self.__get_pvalues_for_group__(
+                group, new_entry)
+
             pvalues[group] = minPvalue
             products_pvalues[group] = productPValue
         return pvalues, products_pvalues
+
+    def __get_pvalues_for_group__(self, group, new_entry):
+        database = self.createCopy()
+        newEntryGroup = dict(new_entry)
+        newEntryGroup["Group"] = group
+        database.addEntryWithGroup(newEntryGroup)
+        minPvalue = 1
+        productPValue = 1
+        for field in database.fields:
+            try:
+                pvalue = database.getPValue(field)
+                if math.isnan(pvalue):
+                    pvalue = 1
+                if pvalue < minPvalue:
+                    minPvalue = pvalue
+                productPValue *= pvalue
+            except DatabaseError.CannotComputeTTestOnField:
+                pass
+        return minPvalue, productPValue
 
     def __get_allocation_probability_from_pvalues__(self, pvalues, products_pvalues):
         probas = dict()
@@ -249,15 +255,15 @@ class Database:
             probas[self.groups[0]] = 0.5
             probas[self.groups[1]] = 0.5
         elif pvalues[self.groups[0]] == pvalues[self.groups[1]]:
-            probas[self.groups[0]] = products_pvalues[self.groups[0]] / (products_pvalues[self.groups[0]]
-                                                                         + products_pvalues[self.groups[1]])
-            probas[self.groups[1]] = products_pvalues[self.groups[1]] / (products_pvalues[self.groups[0]]
-                                                                         + products_pvalues[self.groups[1]])
+            probas[self.groups[0]] = products_pvalues[self.groups[0]] / (products_pvalues[self.groups[0]] +
+                                                                         products_pvalues[self.groups[1]])
+            probas[self.groups[1]] = products_pvalues[self.groups[1]] / (products_pvalues[self.groups[0]] +
+                                                                         products_pvalues[self.groups[1]])
         else:
-            probas[self.groups[0]] = pvalues[self.groups[0]] / (pvalues[self.groups[0]]
-                                                                + pvalues[self.groups[1]])
-            probas[self.groups[1]] = pvalues[self.groups[1]] / (pvalues[self.groups[0]]
-                                                                + pvalues[self.groups[1]])
+            probas[self.groups[0]] = pvalues[self.groups[0]] / (pvalues[self.groups[0]] +
+                                                                pvalues[self.groups[1]])
+            probas[self.groups[1]] = pvalues[self.groups[1]] / (pvalues[self.groups[0]] +
+                                                                pvalues[self.groups[1]])
         return probas
 
     def __is_group_size_difference_significant__(self):
