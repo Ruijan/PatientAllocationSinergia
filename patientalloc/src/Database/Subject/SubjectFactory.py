@@ -21,6 +21,6 @@ class SubjectFactory:
     def getMatchingSubjectId(self):
         nb_of_entries = len(self.database.entries) - 1
         matching_subject_index = random.randint(0, nb_of_entries)
-        while matching_subject_index in self.database.rejected_entries or self.database.getEntryGroup(matching_subject_index) != "BCI":
+        while matching_subject_index + 1 in self.database.rejected_entries or self.database.getEntryGroup(matching_subject_index) != "BCI":
             matching_subject_index = random.randint(0, nb_of_entries)
         return self.database.getEntryId(matching_subject_index)
